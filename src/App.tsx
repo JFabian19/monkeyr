@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowDown,
+  ArrowLeft,
   ArrowRight,
   Camera,
   Instagram,
@@ -26,7 +27,7 @@ const money = (value: number) => `S/ ${value.toFixed(2)}`;
 export default function App() {
   const [cart, setCart] = useState<Cart>({});
   const [cartOpen, setCartOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState(MENU_DATA[0].id);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [addedItem, setAddedItem] = useState<string | null>(null);
 
   const cartItems = useMemo(
@@ -48,21 +49,10 @@ export default function App() {
     [cartItems],
   );
 
-  useEffect(() => {
-    const sections = MENU_DATA.map((category) => document.getElementById(category.id)).filter(Boolean);
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActiveCategory(visible.target.id);
-      },
-      { rootMargin: '-28% 0px -60% 0px', threshold: [0, 0.2, 0.6] },
-    );
-
-    sections.forEach((section) => observer.observe(section as Element));
-    return () => observer.disconnect();
-  }, []);
+  const selectedCategory = useMemo(
+    () => MENU_DATA.find((category) => category.id === selectedCategoryId) ?? null,
+    [selectedCategoryId],
+  );
 
   useEffect(() => {
     if (!cartOpen) return;
@@ -112,8 +102,17 @@ export default function App() {
   };
 
   const goToCategory = (id: string) => {
-    setActiveCategory(id);
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setSelectedCategoryId(id);
+    window.requestAnimationFrame(() => {
+      document.getElementById('category-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
+  const showCategories = () => {
+    setSelectedCategoryId(null);
+    window.requestAnimationFrame(() => {
+      document.getElementById('carta')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   };
 
   return (
@@ -122,16 +121,6 @@ export default function App() {
         <a className="brand" href="#inicio" aria-label="Volver al inicio de Monkeyroll">
           <img src="/monkeyroll-logo.png" alt="Monkeyroll Fast Food Peruano" />
         </a>
-        <div className="topbar-actions">
-          <a className="round-action desktop-only" href={MAPS_URL} target="_blank" rel="noreferrer" aria-label="Ver ubicación">
-            <MapPin size={19} />
-          </a>
-          <button className="cart-action" type="button" onClick={() => setCartOpen(true)} aria-label={`Abrir pedido, ${itemCount} productos`}>
-            <ShoppingBag size={20} />
-            <span className="cart-action-label">Mi pedido</span>
-            <span className="cart-count">{itemCount}</span>
-          </button>
-        </div>
       </header>
 
       <div className="marquee" aria-label="Sabores de Monkeyroll">
@@ -179,38 +168,49 @@ export default function App() {
           <div className="menu-intro">
             <div>
               <p className="eyebrow eyebrow-dark">La carta · Monkeyroll</p>
-              <h2 id="menu-title">Elige tu próxima obsesión.</h2>
+              <h2 id="menu-title">{selectedCategory ? selectedCategory.nombre : 'Elige una categoría.'}</h2>
             </div>
-            <p>Arma tu pedido y envíalo directo por WhatsApp. Simple, rápido y con hambre.</p>
+            <p>
+              {selectedCategory
+                ? selectedCategory.descripcion
+                : 'Entra a una categoría, arma tu pedido y envíalo directo por WhatsApp.'}
+            </p>
           </div>
 
-          <nav className="category-nav" aria-label="Categorías de la carta">
-            {MENU_DATA.map((category) => (
-              <button
-                key={category.id}
-                type="button"
-                className={activeCategory === category.id ? 'active' : ''}
-                onClick={() => goToCategory(category.id)}
-              >
-                {category.nombre}
+          {!selectedCategory ? (
+            <div className="category-grid" aria-label="Categorías de la carta">
+              {MENU_DATA.map((category) => (
+                <button className="category-card" key={category.id} type="button" onClick={() => goToCategory(category.id)}>
+                  <span className="category-card-art" aria-hidden="true" />
+                  <span className="category-card-arrow" aria-hidden="true"><ArrowRight size={19} /></span>
+                  <span className="category-card-copy">
+                    <span>
+                      <strong>{category.nombre}</strong>
+                      <small>{category.items.length} {category.items.length === 1 ? 'producto' : 'productos'}</small>
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="menu-sections" id="category-content">
+              <button className="back-to-categories" type="button" onClick={showCategories}>
+                <ArrowLeft size={18} /> Todas las categorías
               </button>
-            ))}
-          </nav>
-
-          <div className="menu-sections">
-            {MENU_DATA.map((category, categoryIndex) => (
-              <section className="menu-category" id={category.id} key={category.id} aria-labelledby={`${category.id}-title`}>
+              <section className="menu-category" id={selectedCategory.id} aria-labelledby={`${selectedCategory.id}-title`}>
                 <div className="category-heading">
-                  <span className="category-number">{String(categoryIndex + 1).padStart(2, '0')}</span>
+                  <span className="category-number">
+                    {String(MENU_DATA.findIndex((category) => category.id === selectedCategory.id) + 1).padStart(2, '0')}
+                  </span>
                   <div>
-                    <p>{category.eyebrow}</p>
-                    <h3 id={`${category.id}-title`}>{category.nombre}</h3>
-                    <span>{category.descripcion}</span>
+                    <p>{selectedCategory.eyebrow}</p>
+                    <h3 id={`${selectedCategory.id}-title`}>{selectedCategory.nombre}</h3>
+                    <span>{selectedCategory.descripcion}</span>
                   </div>
                 </div>
 
-                <div className={`product-grid ${category.items.length === 1 ? 'single-product' : ''}`}>
-                  {category.items.map((dish) => (
+                <div className={`product-grid ${selectedCategory.items.length === 1 ? 'single-product' : ''}`}>
+                  {selectedCategory.items.map((dish) => (
                     <article className="product-card" key={dish.id}>
                       <div className="product-media" aria-label={`Espacio reservado para la imagen de ${dish.nombre}`}>
                         <Camera size={25} strokeWidth={1.5} />
@@ -231,8 +231,8 @@ export default function App() {
                   ))}
                 </div>
               </section>
-            ))}
-          </div>
+            </div>
+          )}
         </section>
 
         <section className="final-cta">
