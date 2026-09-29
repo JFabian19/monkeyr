@@ -119,7 +119,7 @@ export default function App() {
     <div className="site-shell">
       <header className="topbar" id="inicio">
         <a className="brand" href="#inicio" aria-label="Volver al inicio de Monkeyroll">
-          <img src="/monkeyroll-logo.png" alt="Monkeyroll Fast Food Peruano" />
+          <img src="/monkeyroll-logo-header.png" alt="Monkeyroll Fast Food Peruano" />
         </a>
       </header>
 
