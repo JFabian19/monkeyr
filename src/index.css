@@ -1169,6 +1169,7 @@ a:focus-visible {
 
   .hero {
     min-height: auto;
+    border-bottom: 10px solid var(--ink);
   }
 
   .hero-copy {
@@ -1202,24 +1203,25 @@ a:focus-visible {
     position: relative;
     inset: auto;
     width: 100%;
+    height: clamp(290px, 85vw, 350px);
     min-height: 0;
-    aspect-ratio: 1122 / 1402;
+    aspect-ratio: auto;
     background: #050505;
   }
 
   .hero-visual::after {
-    background: linear-gradient(180deg, var(--ink) 0%, transparent 14%, transparent 84%, var(--ink) 100%);
+    background: linear-gradient(180deg, var(--ink) 0%, transparent 12%, transparent 88%, var(--ink) 100%);
   }
 
   .hero-visual img {
-    object-fit: contain;
-    object-position: center;
+    object-fit: cover;
+    object-position: center bottom;
     opacity: 1;
   }
 
   .hero-stamp {
     right: 24px;
-    bottom: 34px;
+    bottom: 22px;
     width: 92px;
     height: 92px;
   }
