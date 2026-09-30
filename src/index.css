@@ -28,7 +28,7 @@ html {
 
 body {
   margin: 0;
-  min-width: 320px;
+  min-width: 0;
   min-height: 100vh;
   background:
     radial-gradient(circle at 15% 12%, rgba(255, 212, 0, 0.12), transparent 22rem),
@@ -1214,8 +1214,8 @@ a:focus-visible {
   }
 
   .hero-visual img {
-    object-fit: cover;
-    object-position: center bottom;
+    object-fit: contain;
+    object-position: center;
     opacity: 1;
   }
 
