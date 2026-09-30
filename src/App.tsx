@@ -180,8 +180,9 @@ export default function App() {
       ...lines,
       '',
       `*Total: ${money(total)}*`,
+      '*Modalidad: Recoger en tienda*',
       '',
-      '¿Me confirman disponibilidad y tiempo de entrega? 🙌',
+      '¿Me confirman disponibilidad y tiempo de recojo? 🙌',
     ].join('\n');
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
@@ -204,7 +205,7 @@ export default function App() {
     <div className="site-shell">
       <header className="topbar" id="inicio">
         <a className="brand" href="#inicio" aria-label="Volver al inicio de Monkeyroll">
-          <img src="/monkeyroll-logo-header.png" alt="Monkeyroll Fast Food Peruano" />
+          <img src="/monkeyroll-logo-header.png" alt="Monkeyroll" />
         </a>
       </header>
 
@@ -212,7 +213,7 @@ export default function App() {
         <div className="marquee-track">
           {[0, 1, 2, 3].map((item) => (
             <span key={item}>
-              SABOR SIN JAULA <i>•</i> HAMBURGUESAS CON ACTITUD <i>•</i> FAST FOOD PERUANO <i>•</i>
+              SABOR SIN JAULA <i>•</i> HAMBURGUESAS CON ACTITUD <i>•</i> ALITAS CON ACTITUD <i>•</i>
             </span>
           ))}
         </div>
@@ -221,11 +222,17 @@ export default function App() {
       <main>
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <p className="eyebrow"><Sparkles size={15} /> Fast food peruano</p>
+            <p className="eyebrow"><Sparkles size={15} /> Hecho al momento</p>
             <h1 id="hero-title">Sabor que se sale <em>de la jaula.</em></h1>
-            <p className="hero-description">
-              Hamburguesas, salchipapas y clásicos peruanos hechos para atacar el antojo sin pedir permiso.
-            </p>
+            <div className="hero-description-row">
+              <p className="hero-description">
+                Hamburguesas, salchipapas, alitas y clásicos peruanos hechos para atacar el antojo sin pedir permiso.
+              </p>
+              <div className="hero-stamp" aria-hidden="true">
+                <span>100%</span>
+                <small>ANTOJO</small>
+              </div>
+            </div>
             <div className="hero-actions">
               <button className="button button-primary" type="button" onClick={() => document.getElementById('carta')?.scrollIntoView({ behavior: 'smooth' })}>
                 Ver la carta <ArrowDown size={18} />
@@ -237,18 +244,13 @@ export default function App() {
                 <MapPin size={17} /> Google Maps
               </a>
             </div>
-            <div className="hero-notes" aria-label="Características de la carta">
-              <span>Hecho al momento</span>
-              <span>Sazón peruana</span>
-              <span>Delivery</span>
+            <div className="hero-notes" aria-label="Modalidades disponibles">
+              <span>Recoger en tienda</span>
+              <span className="delivery-soon" aria-disabled="true">Delivery <small>Próximamente</small></span>
             </div>
           </div>
           <div className="hero-visual">
             <img src="/monkeyroll-hero.png" alt="Hamburguesa, salchipapas y chaufa al estilo Monkeyroll" />
-            <div className="hero-stamp" aria-hidden="true">
-              <span>100%</span>
-              <small>ANTOJO</small>
-            </div>
           </div>
         </section>
 
@@ -335,7 +337,7 @@ export default function App() {
 
         <section className="location-section" id="ubicacion" aria-labelledby="location-title">
           <div className="location-copy">
-            <p>Monkeyroll · San Juan de Lurigancho</p>
+            <p>Monkeyroll · Lurigancho Ñaña</p>
             <h2 id="location-title">Ubícanos</h2>
             <span>Abre el mapa, revisa la ruta y llega directo a Monkeyroll.</span>
             <a className="button location-button" href={MAPS_URL} target="_blank" rel="noreferrer">
@@ -358,8 +360,8 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        <img src="/monkeyroll-logo.png" alt="Monkeyroll Fast Food Peruano" />
-        <p>Fast food peruano con espíritu inquieto.</p>
+        <img src="/monkeyroll-logo.png" alt="Monkeyroll" />
+        <p>Sabor sin jaula.</p>
         <div className="footer-links">
           <a href={`tel:+${WHATSAPP_NUMBER}`}><Phone size={17} /> 957 669 038</a>
           <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer"><Instagram size={17} /> @monkeyrollperu</a>
@@ -411,7 +413,17 @@ export default function App() {
                   ))}
                 </div>
                 <div className="cart-summary">
-                  <div><span>Total</span><strong>{money(total)}</strong></div>
+                  <div className="fulfillment-options" aria-label="Modalidad del pedido">
+                    <div className="fulfillment-choice selected">
+                      <strong>Recoger en tienda</strong>
+                      <small>Disponible</small>
+                    </div>
+                    <div className="fulfillment-choice disabled" aria-disabled="true">
+                      <strong>Delivery</strong>
+                      <small>Próximamente</small>
+                    </div>
+                  </div>
+                  <div className="cart-total"><span>Total</span><strong>{money(total)}</strong></div>
                   <p>El precio final y la disponibilidad se confirman por WhatsApp.</p>
                   <button type="button" onClick={sendOrder}>
                     Enviar pedido por WhatsApp <ArrowRight size={18} />
