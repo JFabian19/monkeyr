@@ -49,6 +49,7 @@ export default function App() {
   const [configuringCategoryId, setConfiguringCategoryId] = useState<string | null>(null);
   const [configuringUpsell, setConfiguringUpsell] = useState<CategoryUpsell | null>(null);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
+  const [selectedUpsells, setSelectedUpsells] = useState<Record<string, Record<string, string[]>>>({});
   const [note, setNote] = useState('');
   const [configurationError, setConfigurationError] = useState('');
   const [pickupSelected, setPickupSelected] = useState(false);
@@ -82,6 +83,14 @@ export default function App() {
     }),
     [cartItems],
   );
+
+  const configuratorUpsells = useMemo(() => {
+    if (!configuringDish || !configuringCategoryId || configuringUpsell) return [];
+    return CATEGORY_UPSELLS.filter((upsell) => (
+      upsell.categoryId === configuringCategoryId
+      && (!upsell.productosElegibles || upsell.productosElegibles.includes(configuringDish.id))
+    ));
+  }, [configuringCategoryId, configuringDish, configuringUpsell]);
 
   const customerReady = useMemo(() => (
     pickupSelected
@@ -127,6 +136,7 @@ export default function App() {
     setConfiguringCategoryId(null);
     setConfiguringUpsell(null);
     setSelections({});
+    setSelectedUpsells({});
     setNote('');
     setConfigurationError('');
   };
@@ -181,7 +191,9 @@ export default function App() {
     }
     setConfiguringDish(dish);
     setConfiguringCategoryId(categoryId);
+    setConfiguringUpsell(null);
     setSelections({});
+    setSelectedUpsells({});
     setNote('');
     setConfigurationError('');
   };
@@ -202,6 +214,7 @@ export default function App() {
     setConfiguringCategoryId(upsell.categoryId);
     setConfiguringUpsell(upsell);
     setSelections({});
+    setSelectedUpsells({});
     setNote('');
     setConfigurationError('');
   };
@@ -217,6 +230,41 @@ export default function App() {
     setConfigurationError('');
   };
 
+  const toggleUpsell = (upsellId: string) => {
+    setSelectedUpsells((current) => {
+      if (Object.prototype.hasOwnProperty.call(current, upsellId)) {
+        const next = { ...current };
+        delete next[upsellId];
+        return next;
+      }
+      return { ...current, [upsellId]: {} };
+    });
+    setConfigurationError('');
+  };
+
+  const toggleUpsellChoice = (
+    upsellId: string,
+    optionId: string,
+    choiceId: string,
+    type: 'single' | 'multiple',
+    maximo?: number,
+  ) => {
+    setSelectedUpsells((current) => {
+      const upsellSelections = current[upsellId] ?? {};
+      const chosen = upsellSelections[optionId] ?? [];
+      let nextChosen: string[];
+      if (type === 'single') nextChosen = [choiceId];
+      else if (chosen.includes(choiceId)) nextChosen = chosen.filter((id) => id !== choiceId);
+      else if (maximo && chosen.length >= maximo) return current;
+      else nextChosen = [...chosen, choiceId];
+      return {
+        ...current,
+        [upsellId]: { ...upsellSelections, [optionId]: nextChosen },
+      };
+    });
+    setConfigurationError('');
+  };
+
   const confirmConfiguration = () => {
     if (!configuringDish) return;
     const missingOption = (configuringDish.opciones ?? []).find((option) => {
@@ -228,6 +276,23 @@ export default function App() {
       setConfigurationError(`Completa: ${missingOption.nombre}.`);
       return;
     }
+
+    if (!configuringUpsell) {
+      const incompleteUpsell = configuratorUpsells.find((upsell) => {
+        const upsellSelections = selectedUpsells[upsell.id];
+        if (!upsellSelections) return false;
+        return (upsell.opciones ?? []).some((option) => {
+          const selectedCount = upsellSelections[option.id]?.length ?? 0;
+          const minimum = option.minimo ?? (option.requerida ? 1 : 0);
+          return selectedCount < minimum;
+        });
+      });
+      if (incompleteUpsell) {
+        setConfigurationError(`Completa las opciones de: ${incompleteUpsell.nombre}.`);
+        return;
+      }
+    }
+
     addConfiguredDish(
       configuringDish,
       selections,
@@ -235,6 +300,20 @@ export default function App() {
       configuringUpsell?.categoryId ?? configuringCategoryId ?? '',
       configuringUpsell?.id,
     );
+
+    if (!configuringUpsell) {
+      configuratorUpsells.forEach((upsell) => {
+        const upsellSelections = selectedUpsells[upsell.id];
+        if (!upsellSelections) return;
+        addConfiguredDish({
+          id: `upsell-${upsell.id}`,
+          nombre: upsell.nombre,
+          descripcion: upsell.descripcion,
+          precio: upsell.precio,
+          opciones: upsell.opciones,
+        }, upsellSelections, '', upsell.categoryId, upsell.id);
+      });
+    }
     closeConfigurator();
   };
 
@@ -643,6 +722,78 @@ export default function App() {
                   </fieldset>
                 );
               })}
+
+              {!configuringUpsell && configuratorUpsells.length > 0 && (
+                <section className="config-upsells" aria-labelledby="config-upsells-title">
+                  <div className="config-upsells-heading">
+                    <div>
+                      <span id="config-upsells-title">Agrégale algo más</span>
+                      <small>Opcional</small>
+                    </div>
+                    <p>Pulsa el + para añadirlo</p>
+                  </div>
+
+                  <div className="config-upsell-list">
+                    {configuratorUpsells.map((upsell) => {
+                      const isSelected = Object.prototype.hasOwnProperty.call(selectedUpsells, upsell.id);
+                      const upsellSelections = selectedUpsells[upsell.id] ?? {};
+                      return (
+                        <article className={`config-upsell-card ${isSelected ? 'selected' : ''}`} key={upsell.id}>
+                          <button
+                            className="config-upsell-toggle"
+                            type="button"
+                            onClick={() => toggleUpsell(upsell.id)}
+                            aria-pressed={isSelected}
+                          >
+                            <span>
+                              <strong>{upsell.nombre}</strong>
+                              <small>{upsell.descripcion}</small>
+                            </span>
+                            <b>+ {money(upsell.precio)}</b>
+                            <i aria-hidden="true"><Plus size={18} /></i>
+                          </button>
+
+                          {isSelected && (upsell.opciones ?? []).map((option) => {
+                            const selectedCount = upsellSelections[option.id]?.length ?? 0;
+                            const minimum = option.minimo ?? (option.requerida ? 1 : 0);
+                            return (
+                              <fieldset className="config-option upsell-option" key={`${upsell.id}-${option.id}`}>
+                                <legend>
+                                  <span>{option.nombre}</span>
+                                  <small>{minimum > 0 ? 'Obligatorio' : 'Opcional'}</small>
+                                </legend>
+                                <div className="choice-grid">
+                                  {option.opciones.map((choice) => {
+                                    const checked = upsellSelections[option.id]?.includes(choice.id) ?? false;
+                                    return (
+                                      <label className={`choice-pill ${checked ? 'selected' : ''}`} key={choice.id}>
+                                        <input
+                                          type={option.tipo === 'single' ? 'radio' : 'checkbox'}
+                                          name={`${upsell.id}-${option.id}`}
+                                          checked={checked}
+                                          onChange={() => toggleUpsellChoice(
+                                            upsell.id,
+                                            option.id,
+                                            choice.id,
+                                            option.tipo,
+                                            option.maximo,
+                                          )}
+                                        />
+                                        <span>{choice.nombre}</span>
+                                      </label>
+                                    );
+                                  })}
+                                </div>
+                                {option.maximo && <p>{selectedCount} de {option.maximo} seleccionados</p>}
+                              </fieldset>
+                            );
+                          })}
+                        </article>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
 
               {configuringCategoryId !== 'bebidas' && !configuringUpsell && (
                 <label className="note-field">
