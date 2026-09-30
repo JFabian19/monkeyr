@@ -1168,13 +1168,16 @@ a:focus-visible {
   }
 
   .hero {
-    min-height: auto;
+    display: block;
+    min-height: 760px;
+    overflow: hidden;
     border-bottom: 10px solid var(--ink);
   }
 
   .hero-copy {
-    min-height: auto;
-    padding: 54px 20px 44px;
+    min-height: 760px;
+    justify-content: flex-start;
+    padding: 54px 20px 38px;
   }
 
   .hero h1 {
@@ -1200,17 +1203,25 @@ a:focus-visible {
   }
 
   .hero-visual {
-    position: relative;
-    inset: auto;
+    position: absolute;
+    z-index: 0;
+    inset: 0;
     width: 100%;
-    height: clamp(290px, 85vw, 350px);
+    height: 100%;
     min-height: 0;
     aspect-ratio: auto;
     background: #050505;
   }
 
   .hero-visual::after {
-    background: linear-gradient(180deg, var(--ink) 0%, transparent 12%, transparent 88%, var(--ink) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(10, 10, 10, 0.98) 0%,
+      rgba(10, 10, 10, 0.94) 34%,
+      rgba(10, 10, 10, 0.7) 58%,
+      rgba(10, 10, 10, 0.16) 82%,
+      var(--ink) 100%
+    );
   }
 
   .hero-visual img {
