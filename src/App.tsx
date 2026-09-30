@@ -18,7 +18,8 @@ import { MENU_DATA, MENU_ITEMS, type Dish } from './data/menuData';
 
 const WHATSAPP_NUMBER = '51957669038';
 const INSTAGRAM_URL = 'https://www.instagram.com/monkeyrollperu/';
-const MAPS_URL = 'https://www.google.com/maps/search/?api=1&query=Monkeyroll+San+Juan+de+Lurigancho';
+const MAPS_URL = 'https://www.google.com/maps/place/Monkeyroll/@-11.985699,-76.841749,1851m/data=!3m1!1e3!4m6!3m5!1s0x9105c33838b74247:0x8d4424dd7d3e1518!8m2!3d-11.9871569!4d-76.8354301!16s%2Fg%2F11p5ml7x56!5m1!1e1?entry=ttu&g_ep=EgoyMDI2MDkyNy4xIKXMDSoASAFQAw%3D%3D';
+const MAP_EMBED_URL = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d21809.05114670971!2d-76.81351747747055!3d-11.972918849295421!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c33838b74247%3A0x8d4424dd7d3e1518!2sMonkeyroll!5e1!3m2!1ses!2spe!4v1790729257953!5m2!1ses!2spe';
 
 type Cart = Record<string, number>;
 
@@ -148,6 +149,9 @@ export default function App() {
               <a className="button button-ghost" href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noreferrer">
                 <Phone size={17} /> WhatsApp
               </a>
+              <a className="button button-ghost button-map" href={MAPS_URL} target="_blank" rel="noreferrer">
+                <MapPin size={17} /> Google Maps
+              </a>
             </div>
             <div className="hero-notes" aria-label="Características de la carta">
               <span>Hecho al momento</span>
@@ -243,6 +247,29 @@ export default function App() {
           <button className="button button-dark" type="button" onClick={() => setCartOpen(true)}>
             Revisar mi pedido <ArrowRight size={18} />
           </button>
+        </section>
+
+        <section className="location-section" id="ubicacion" aria-labelledby="location-title">
+          <div className="location-copy">
+            <p>Monkeyroll · San Juan de Lurigancho</p>
+            <h2 id="location-title">Ubícanos</h2>
+            <span>Abre el mapa, revisa la ruta y llega directo a Monkeyroll.</span>
+            <a className="button location-button" href={MAPS_URL} target="_blank" rel="noreferrer">
+              <MapPin size={18} /> Abrir en Google Maps
+            </a>
+          </div>
+          <div className="map-frame">
+            <iframe
+              title="Ubicación de Monkeyroll en Google Maps"
+              src={MAP_EMBED_URL}
+              width="400"
+              height="300"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+            />
+          </div>
         </section>
       </main>
 
