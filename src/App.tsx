@@ -14,35 +14,44 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import { MENU_DATA, MENU_ITEMS, type Dish } from './data/menuData';
+import { MENU_DATA, type Dish } from './data/menuData';
 
 const WHATSAPP_NUMBER = '51957669038';
 const INSTAGRAM_URL = 'https://www.instagram.com/monkeyrollperu/';
 const MAPS_URL = 'https://www.google.com/maps/place/Monkeyroll/@-11.985699,-76.841749,1851m/data=!3m1!1e3!4m6!3m5!1s0x9105c33838b74247:0x8d4424dd7d3e1518!8m2!3d-11.9871569!4d-76.8354301!16s%2Fg%2F11p5ml7x56!5m1!1e1?entry=ttu&g_ep=EgoyMDI2MDkyNy4xIKXMDSoASAFQAw%3D%3D';
 const MAP_EMBED_URL = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d21809.05114670971!2d-76.81351747747055!3d-11.972918849295421!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c33838b74247%3A0x8d4424dd7d3e1518!2sMonkeyroll!5e1!3m2!1ses!2spe!4v1790729257953!5m2!1ses!2spe';
 
-type Cart = Record<string, number>;
+interface CartSelection {
+  label: string;
+  values: string[];
+}
+
+interface CartItem {
+  key: string;
+  dishId: string;
+  nombre: string;
+  precio: number;
+  cantidad: number;
+  selections: CartSelection[];
+  nota?: string;
+}
 
 const money = (value: number) => `S/ ${value.toFixed(2)}`;
 
 export default function App() {
-  const [cart, setCart] = useState<Cart>({});
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [addedItem, setAddedItem] = useState<string | null>(null);
-
-  const cartItems = useMemo(
-    () =>
-      MENU_ITEMS.filter((item) => cart[item.id]).map((item) => ({
-        ...item,
-        cantidad: cart[item.id],
-      })),
-    [cart],
-  );
+  const [configuringDish, setConfiguringDish] = useState<Dish | null>(null);
+  const [configuringCategoryId, setConfiguringCategoryId] = useState<string | null>(null);
+  const [selections, setSelections] = useState<Record<string, string[]>>({});
+  const [note, setNote] = useState('');
+  const [configurationError, setConfigurationError] = useState('');
 
   const itemCount = useMemo(
-    () => Object.keys(cart).reduce((total, id) => total + (cart[id] ?? 0), 0),
-    [cart],
+    () => cartItems.reduce((sum, item) => sum + item.cantidad, 0),
+    [cartItems],
   );
 
   const total = useMemo(
@@ -56,40 +65,115 @@ export default function App() {
   );
 
   useEffect(() => {
-    if (!cartOpen) return;
+    if (!cartOpen && !configuringDish) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setCartOpen(false);
+      if (event.key !== 'Escape') return;
+      if (configuringDish) setConfiguringDish(null);
+      else setCartOpen(false);
     };
     window.addEventListener('keydown', closeOnEscape);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', closeOnEscape);
     };
-  }, [cartOpen]);
+  }, [cartOpen, configuringDish]);
 
-  const changeQuantity = (id: string, delta: number) => {
-    setCart((current) => {
-      const nextQuantity = (current[id] || 0) + delta;
-      const next = { ...current };
-      if (nextQuantity <= 0) delete next[id];
-      else next[id] = nextQuantity;
-      return next;
-    });
+  const changeQuantity = (key: string, delta: number) => {
+    setCartItems((current) => current
+      .map((item) => item.key === key ? { ...item, cantidad: item.cantidad + delta } : item)
+      .filter((item) => item.cantidad > 0));
   };
 
-  const addToCart = (dish: Dish) => {
-    changeQuantity(dish.id, 1);
+  const closeConfigurator = () => {
+    setConfiguringDish(null);
+    setConfiguringCategoryId(null);
+    setSelections({});
+    setNote('');
+    setConfigurationError('');
+  };
+
+  const addConfiguredDish = (dish: Dish, selected: Record<string, string[]>, itemNote: string) => {
+    const resolvedSelections = (dish.opciones ?? []).flatMap((option) => {
+      const choiceIds = selected[option.id] ?? [];
+      const values = choiceIds
+        .map((choiceId) => option.opciones.find((choice) => choice.id === choiceId)?.nombre)
+        .filter((value): value is string => Boolean(value));
+      return values.length ? [{ label: option.nombre, values }] : [];
+    });
+    const extraPrice = (dish.opciones ?? []).reduce((sum, option) => sum + (selected[option.id] ?? []).reduce(
+      (optionSum, choiceId) => optionSum + (option.opciones.find((choice) => choice.id === choiceId)?.precioExtra ?? 0),
+      0,
+    ), 0);
+    const cleanNote = itemNote.trim();
+    const key = JSON.stringify([dish.id, selected, cleanNote]);
+
+    setCartItems((current) => {
+      const existing = current.find((item) => item.key === key);
+      if (existing) {
+        return current.map((item) => item.key === key ? { ...item, cantidad: item.cantidad + 1 } : item);
+      }
+      return [...current, {
+        key,
+        dishId: dish.id,
+        nombre: dish.nombre,
+        precio: dish.precio + extraPrice,
+        cantidad: 1,
+        selections: resolvedSelections,
+        nota: cleanNote || undefined,
+      }];
+    });
     setAddedItem(dish.nombre);
     window.setTimeout(() => setAddedItem(null), 1700);
   };
 
+  const openConfigurator = (dish: Dish, categoryId: string) => {
+    const notesAllowed = categoryId !== 'bebidas';
+    if (!dish.opciones?.length && !notesAllowed) {
+      addConfiguredDish(dish, {}, '');
+      return;
+    }
+    setConfiguringDish(dish);
+    setConfiguringCategoryId(categoryId);
+    setSelections({});
+    setNote('');
+    setConfigurationError('');
+  };
+
+  const toggleChoice = (optionId: string, choiceId: string, type: 'single' | 'multiple', maximo?: number) => {
+    setSelections((current) => {
+      const chosen = current[optionId] ?? [];
+      if (type === 'single') return { ...current, [optionId]: [choiceId] };
+      if (chosen.includes(choiceId)) return { ...current, [optionId]: chosen.filter((id) => id !== choiceId) };
+      if (maximo && chosen.length >= maximo) return current;
+      return { ...current, [optionId]: [...chosen, choiceId] };
+    });
+    setConfigurationError('');
+  };
+
+  const confirmConfiguration = () => {
+    if (!configuringDish) return;
+    const missingOption = (configuringDish.opciones ?? []).find((option) => {
+      const selectedCount = selections[option.id]?.length ?? 0;
+      const minimum = option.minimo ?? (option.requerida ? 1 : 0);
+      return selectedCount < minimum;
+    });
+    if (missingOption) {
+      setConfigurationError(`Completa: ${missingOption.nombre}.`);
+      return;
+    }
+    addConfiguredDish(configuringDish, selections, note);
+    closeConfigurator();
+  };
+
   const sendOrder = () => {
     if (!cartItems.length) return;
-    const lines = cartItems.map(
-      (item) => `• ${item.cantidad} × ${item.nombre} — ${money(item.precio * item.cantidad)}`,
-    );
+    const lines = cartItems.flatMap((item) => {
+      const details = item.selections.map((selection) => `   ${selection.label}: ${selection.values.join(', ')}`);
+      if (item.nota) details.push(`   Nota: ${item.nota}`);
+      return [`• ${item.cantidad} × ${item.nombre} — ${money(item.precio * item.cantidad)}`, ...details];
+    });
     const message = [
       '*Hola Monkeyroll, quiero hacer este pedido:*',
       '',
@@ -227,7 +311,7 @@ export default function App() {
                           <span>{money(dish.precio)}</span>
                         </div>
                         <p>{dish.descripcion || 'Una favorita de la casa, preparada al momento.'}</p>
-                        <button type="button" onClick={() => addToCart(dish)} aria-label={`Agregar ${dish.nombre} al pedido`}>
+                        <button type="button" onClick={() => openConfigurator(dish, selectedCategory.id)} aria-label={`Agregar ${dish.nombre} al pedido`}>
                           Agregar <Plus size={17} strokeWidth={2.5} />
                         </button>
                       </div>
@@ -306,17 +390,21 @@ export default function App() {
               <>
                 <div className="cart-items">
                   {cartItems.map((item) => (
-                    <div className="cart-item" key={item.id}>
+                    <div className="cart-item" key={item.key}>
                       <div className="cart-item-copy">
                         <h3>{item.nombre}</h3>
                         <p>{money(item.precio)}</p>
+                        {item.selections.map((selection) => (
+                          <small key={selection.label}><strong>{selection.label}:</strong> {selection.values.join(', ')}</small>
+                        ))}
+                        {item.nota && <small><strong>Nota:</strong> {item.nota}</small>}
                       </div>
                       <div className="quantity-control" aria-label={`Cantidad de ${item.nombre}`}>
-                        <button type="button" onClick={() => changeQuantity(item.id, -1)} aria-label="Quitar uno"><Minus size={15} /></button>
+                        <button type="button" onClick={() => changeQuantity(item.key, -1)} aria-label="Quitar uno"><Minus size={15} /></button>
                         <span>{item.cantidad}</span>
-                        <button type="button" onClick={() => changeQuantity(item.id, 1)} aria-label="Agregar uno"><Plus size={15} /></button>
+                        <button type="button" onClick={() => changeQuantity(item.key, 1)} aria-label="Agregar uno"><Plus size={15} /></button>
                       </div>
-                      <button className="delete-item" type="button" onClick={() => changeQuantity(item.id, -item.cantidad)} aria-label={`Eliminar ${item.nombre}`}>
+                      <button className="delete-item" type="button" onClick={() => changeQuantity(item.key, -item.cantidad)} aria-label={`Eliminar ${item.nombre}`}>
                         <Trash2 size={17} />
                       </button>
                     </div>
@@ -339,6 +427,76 @@ export default function App() {
               </div>
             )}
           </aside>
+        </div>
+      )}
+
+      {configuringDish && (
+        <div className="config-layer" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && closeConfigurator()}>
+          <section className="config-dialog" role="dialog" aria-modal="true" aria-labelledby="config-title">
+            <div className="config-header">
+              <div>
+                <p>Personaliza tu pedido</p>
+                <h2 id="config-title">{configuringDish.nombre}</h2>
+                <span>Desde {money(configuringDish.precio)}</span>
+              </div>
+              <button type="button" onClick={closeConfigurator} aria-label="Cerrar personalización"><X size={21} /></button>
+            </div>
+
+            <div className="config-content">
+              {(configuringDish.opciones ?? []).map((option) => {
+                const selectedCount = selections[option.id]?.length ?? 0;
+                const minimum = option.minimo ?? (option.requerida ? 1 : 0);
+                return (
+                  <fieldset className="config-option" key={option.id}>
+                    <legend>
+                      <span>{option.nombre}</span>
+                      <small>{minimum > 0 ? `Obligatorio${option.maximo ? ` · elige ${option.maximo}` : ''}` : 'Opcional'}</small>
+                    </legend>
+                    <div className="choice-grid">
+                      {option.opciones.map((choice) => {
+                        const checked = selections[option.id]?.includes(choice.id) ?? false;
+                        return (
+                          <label className={`choice-pill ${checked ? 'selected' : ''}`} key={choice.id}>
+                            <input
+                              type={option.tipo === 'single' ? 'radio' : 'checkbox'}
+                              name={option.id}
+                              checked={checked}
+                              onChange={() => toggleChoice(option.id, choice.id, option.tipo, option.maximo)}
+                            />
+                            <span>{choice.nombre}</span>
+                            {choice.precioExtra ? <small>+ {money(choice.precioExtra)}</small> : null}
+                          </label>
+                        );
+                      })}
+                    </div>
+                    {option.maximo && <p>{selectedCount} de {option.maximo} seleccionados</p>}
+                  </fieldset>
+                );
+              })}
+
+              {configuringCategoryId !== 'bebidas' && (
+                <label className="note-field">
+                  <span>Nota para cocina <small>Opcional</small></span>
+                  <textarea
+                    value={note}
+                    maxLength={180}
+                    onChange={(event) => setNote(event.target.value)}
+                    placeholder="Ej.: sin cebolla, salsas aparte..."
+                    rows={3}
+                  />
+                  <small>{note.length}/180</small>
+                </label>
+              )}
+
+              {configurationError && <p className="config-error" role="alert">{configurationError}</p>}
+            </div>
+
+            <div className="config-footer">
+              <button type="button" onClick={confirmConfiguration}>
+                Agregar al pedido <Plus size={18} />
+              </button>
+            </div>
+          </section>
         </div>
       )}
 

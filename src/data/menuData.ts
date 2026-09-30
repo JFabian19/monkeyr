@@ -3,6 +3,23 @@ export interface Dish {
   nombre: string;
   descripcion?: string;
   precio: number;
+  opciones?: DishOption[];
+}
+
+export interface DishOptionChoice {
+  id: string;
+  nombre: string;
+  precioExtra?: number;
+}
+
+export interface DishOption {
+  id: string;
+  nombre: string;
+  tipo: 'single' | 'multiple';
+  requerida?: boolean;
+  minimo?: number;
+  maximo?: number;
+  opciones: DishOptionChoice[];
 }
 
 export interface Category {
@@ -13,6 +30,73 @@ export interface Category {
   items: Dish[];
 }
 
+const SABORES_ALITAS: DishOption = {
+  id: 'sabor-alitas',
+  nombre: 'Elige el sabor de tus alitas',
+  tipo: 'single',
+  requerida: true,
+  opciones: [
+    { id: 'bbq', nombre: 'BBQ' },
+    { id: 'bufalo', nombre: 'Búfalo' },
+    { id: 'mango-fuego', nombre: 'Mango Fuego' },
+    { id: 'mango-princesa', nombre: 'Mango Princesa' },
+    { id: 'maracuya', nombre: 'Maracuyá' },
+    { id: 'maracuya-hot', nombre: 'Maracuyá Hot' },
+    { id: 'chimichurri', nombre: 'Chimichurri' },
+    { id: 'acevichada', nombre: 'Acevichada' },
+  ],
+};
+
+const BEBIDA_CONO: DishOption = {
+  id: 'sabor-bebida',
+  nombre: 'Elige el sabor de la bebida',
+  tipo: 'single',
+  requerida: true,
+  opciones: [
+    { id: 'limonada', nombre: 'Limonada' },
+    { id: 'fresa', nombre: 'Fresa' },
+    { id: 'pina', nombre: 'Piña' },
+  ],
+};
+
+const PORCION_ARROZ: DishOption = {
+  id: 'adicional-arroz',
+  nombre: '¿Deseas agregar arroz?',
+  tipo: 'single',
+  opciones: [
+    { id: 'sin-arroz', nombre: 'Sin arroz' },
+    { id: 'con-arroz', nombre: 'Con porción de arroz', precioExtra: 2 },
+  ],
+};
+
+const ADICIONAL_CRIOLLO: DishOption = {
+  id: 'adicional-criollo',
+  nombre: '¿Deseas agregar los 2 acompañamientos?',
+  tipo: 'single',
+  opciones: [
+    { id: 'sin-adicional', nombre: 'Sin adicional' },
+    { id: 'huevo-platano', nombre: 'Huevo y plátano', precioExtra: 3 },
+  ],
+};
+
+const PROMO_BEBIDAS_WINGS: DishOption = {
+  id: 'promo-bebidas-wings',
+  nombre: 'Promoción de 2 bebidas',
+  tipo: 'single',
+  opciones: [
+    { id: 'sin-promo', nombre: 'Sin promoción' },
+    { id: 'jugos-fresa-fresa', nombre: '2 jugos: Fresa + Fresa', precioExtra: 10 },
+    { id: 'jugos-fresa-pina', nombre: '2 jugos: Fresa + Piña', precioExtra: 10 },
+    { id: 'jugos-fresa-papaya', nombre: '2 jugos: Fresa + Papaya', precioExtra: 10 },
+    { id: 'jugos-pina-pina', nombre: '2 jugos: Piña + Piña', precioExtra: 10 },
+    { id: 'jugos-pina-papaya', nombre: '2 jugos: Piña + Papaya', precioExtra: 10 },
+    { id: 'jugos-papaya-papaya', nombre: '2 jugos: Papaya + Papaya', precioExtra: 10 },
+    { id: 'bebidas-limonada-limonada', nombre: '2 bebidas: Limonada + Limonada', precioExtra: 12 },
+    { id: 'bebidas-limonada-maracuya', nombre: '2 bebidas: Limonada + Maracuyá', precioExtra: 12 },
+    { id: 'bebidas-maracuya-maracuya', nombre: '2 bebidas: Maracuyá + Maracuyá', precioExtra: 12 },
+  ],
+};
+
 // Carta actualizada desde “CARTA MONKEY.xlsx”. Las imágenes se incorporarán
 // en una siguiente etapa cuando el cliente entregue o apruebe el material.
 export const MENU_DATA: Category[] = [
@@ -22,7 +106,19 @@ export const MENU_DATA: Category[] = [
     eyebrow: 'Incluyen tomate, lechuga y papas fritas',
     descripcion: 'Hamburguesas de la casa, desde la original hasta las combinaciones más completas.',
     items: [
-      { id: 'hamb-la-parrillera', nombre: 'La Parrillera', descripcion: 'Carne tradicional, queso o huevo, chorizo y salsa chimichurri.', precio: 15 },
+      {
+        id: 'hamb-la-parrillera',
+        nombre: 'La Parrillera',
+        descripcion: 'Carne tradicional, queso o huevo, chorizo y salsa chimichurri.',
+        precio: 15,
+        opciones: [{
+          id: 'queso-o-huevo',
+          nombre: 'Elige queso o huevo',
+          tipo: 'single',
+          requerida: true,
+          opciones: [{ id: 'queso', nombre: 'Queso' }, { id: 'huevo', nombre: 'Huevo' }],
+        }],
+      },
       { id: 'hamb-la-power', nombre: 'La Power', descripcion: 'Doble carne tradicional, doble queso cheddar y doble tocino.', precio: 22 },
       { id: 'hamb-la-crunchy', nombre: 'La Crunchy - Crispy', descripcion: 'Pollo crispy, queso cheddar y salsa BBQ.', precio: 15 },
       { id: 'hamb-la-original', nombre: 'La Original', descripcion: 'Carne tradicional.', precio: 12 },
@@ -39,7 +135,26 @@ export const MENU_DATA: Category[] = [
       { id: 'sand-chicken-grill', nombre: 'Chicken Grill', descripcion: 'Doble filete de pollo a la parrilla.', precio: 14 },
       { id: 'sand-chicken-tropical', nombre: 'Chicken Tropical', descripcion: 'Filete de pollo, piña y queso cheddar.', precio: 15 },
       { id: 'sand-deshilachado-clasico', nombre: 'Deshilachado clásico', descripcion: '100 g de pollo deshilachado.', precio: 10 },
-      { id: 'sand-deshilachado-especial', nombre: 'Deshilachado especial', descripcion: '100 g de pollo deshilachado y dos acompañamientos: plátano, huevo, tocino, queso cheddar o jamón.', precio: 13 },
+      {
+        id: 'sand-deshilachado-especial',
+        nombre: 'Deshilachado especial',
+        descripcion: '100 g de pollo deshilachado y dos acompañamientos: plátano, huevo, tocino, queso cheddar o jamón.',
+        precio: 13,
+        opciones: [{
+          id: 'acompanamientos',
+          nombre: 'Elige 2 acompañamientos',
+          tipo: 'multiple',
+          minimo: 2,
+          maximo: 2,
+          opciones: [
+            { id: 'platano', nombre: 'Plátano' },
+            { id: 'huevo', nombre: 'Huevo' },
+            { id: 'tocino', nombre: 'Tocino' },
+            { id: 'queso-cheddar', nombre: 'Queso cheddar' },
+            { id: 'jamon', nombre: 'Jamón' },
+          ],
+        }],
+      },
     ],
   },
   {
@@ -62,13 +177,47 @@ export const MENU_DATA: Category[] = [
     eyebrow: 'Pollo crocante con acompañamientos',
     descripcion: 'Broster y filetes crocantes servidos con papas, ensalada o chaufa.',
     items: [
-      { id: 'broster-ala-pierna', nombre: 'Broster clásico - ala o pierna', descripcion: 'Presa broster, ensalada y papas.', precio: 10 },
-      { id: 'broster-pecho-entrepierna', nombre: 'Broster clásico - pecho o entrepierna', descripcion: 'Presa broster, ensalada y papas.', precio: 13 },
-      { id: 'broster-montada', nombre: 'La Montada Broster', descripcion: 'Dos alitas broster, ensalada y papas.', precio: 16 },
-      { id: 'milanesa-crunch', nombre: 'Milanesa Crunch', descripcion: 'Una pieza crocante de filete de pollo con papas.', precio: 15 },
-      { id: 'mostrito-ala-pierna', nombre: 'Mostrito Crunch - ala o pierna', descripcion: 'Presa broster, chaufa y papas.', precio: 16 },
-      { id: 'mostrito-pecho-entrepierna', nombre: 'Mostrito Crunch - pecho o entrepierna', descripcion: 'Presa broster, chaufa y papas.', precio: 19 },
-      { id: 'broster-con-salsa', nombre: 'La Broster con salsa', descripcion: 'Ala o pierna broster, ensalada, papas y salsa acevichada, BBQ o búfalo. Agrega arroz por S/ 2.00.', precio: 12 },
+      {
+        id: 'broster-ala-pierna',
+        nombre: 'Broster clásico - ala o pierna',
+        descripcion: 'Presa broster, ensalada y papas.',
+        precio: 10,
+        opciones: [{ id: 'presa', nombre: 'Elige tu presa', tipo: 'single', requerida: true, opciones: [{ id: 'ala', nombre: 'Ala' }, { id: 'pierna', nombre: 'Pierna' }] }, PORCION_ARROZ],
+      },
+      {
+        id: 'broster-pecho-entrepierna',
+        nombre: 'Broster clásico - pecho o entrepierna',
+        descripcion: 'Presa broster, ensalada y papas.',
+        precio: 13,
+        opciones: [{ id: 'presa', nombre: 'Elige tu presa', tipo: 'single', requerida: true, opciones: [{ id: 'pecho', nombre: 'Pecho' }, { id: 'entrepierna', nombre: 'Entrepierna' }] }, PORCION_ARROZ],
+      },
+      { id: 'broster-montada', nombre: 'La Montada Broster', descripcion: 'Dos alitas broster, ensalada y papas.', precio: 16, opciones: [PORCION_ARROZ] },
+      { id: 'milanesa-crunch', nombre: 'Milanesa Crunch', descripcion: 'Una pieza crocante de filete de pollo con papas.', precio: 15, opciones: [PORCION_ARROZ] },
+      {
+        id: 'mostrito-ala-pierna',
+        nombre: 'Mostrito Crunch - ala o pierna',
+        descripcion: 'Presa broster, chaufa y papas.',
+        precio: 16,
+        opciones: [{ id: 'presa', nombre: 'Elige tu presa', tipo: 'single', requerida: true, opciones: [{ id: 'ala', nombre: 'Ala' }, { id: 'pierna', nombre: 'Pierna' }] }, PORCION_ARROZ],
+      },
+      {
+        id: 'mostrito-pecho-entrepierna',
+        nombre: 'Mostrito Crunch - pecho o entrepierna',
+        descripcion: 'Presa broster, chaufa y papas.',
+        precio: 19,
+        opciones: [{ id: 'presa', nombre: 'Elige tu presa', tipo: 'single', requerida: true, opciones: [{ id: 'pecho', nombre: 'Pecho' }, { id: 'entrepierna', nombre: 'Entrepierna' }] }, PORCION_ARROZ],
+      },
+      {
+        id: 'broster-con-salsa',
+        nombre: 'La Broster con salsa',
+        descripcion: 'Ala o pierna broster, ensalada, papas y salsa acevichada, BBQ o búfalo. Agrega arroz por S/ 2.00.',
+        precio: 12,
+        opciones: [
+          { id: 'presa', nombre: 'Elige tu presa', tipo: 'single', requerida: true, opciones: [{ id: 'ala', nombre: 'Ala' }, { id: 'pierna', nombre: 'Pierna' }] },
+          { id: 'salsa', nombre: 'Elige tu salsa', tipo: 'single', requerida: true, opciones: [{ id: 'acevichada', nombre: 'Acevichada' }, { id: 'bbq', nombre: 'BBQ' }, { id: 'bufalo', nombre: 'Búfalo' }] },
+          PORCION_ARROZ,
+        ],
+      },
     ],
   },
   {
@@ -77,11 +226,11 @@ export const MENU_DATA: Category[] = [
     eyebrow: 'Alitas bañadas en tu salsa favorita',
     descripcion: 'Elige entre BBQ, búfalo, mango fuego, mango princesa, maracuyá, maracuyá hot, chimichurri o acevichada.',
     items: [
-      { id: 'wings-clasicas', nombre: 'Las Clásicas', descripcion: 'Cinco trozos de pollo bañados en salsa y acompañados de papas crujientes.', precio: 15 },
-      { id: 'wings-salchialitas', nombre: 'Salchialitas', descripcion: 'Cinco alitas del sabor que elijas, papas y salchicha frankfurter.', precio: 17 },
-      { id: 'wings-mostrialitas', nombre: 'Mostrialitas', descripcion: 'Cinco alitas del sabor que elijas, papas y una porción de chaufa.', precio: 20 },
-      { id: 'wings-combo', nombre: 'Combo Wings', descripcion: 'Diez trozos de alitas bañadas en salsa y acompañadas de papas crujientes.', precio: 26 },
-      { id: 'wings-combo-triple', nombre: 'Combo Wings Triple', descripcion: 'Quince trozos de alitas bañadas en salsa y acompañadas de papas crujientes.', precio: 40 },
+      { id: 'wings-clasicas', nombre: 'Las Clásicas', descripcion: 'Cinco trozos de pollo bañados en salsa y acompañados de papas crujientes.', precio: 15, opciones: [SABORES_ALITAS] },
+      { id: 'wings-salchialitas', nombre: 'Salchialitas', descripcion: 'Cinco alitas del sabor que elijas, papas y salchicha frankfurter.', precio: 17, opciones: [SABORES_ALITAS] },
+      { id: 'wings-mostrialitas', nombre: 'Mostrialitas', descripcion: 'Cinco alitas del sabor que elijas, papas y una porción de chaufa.', precio: 20, opciones: [SABORES_ALITAS] },
+      { id: 'wings-combo', nombre: 'Combo Wings', descripcion: 'Diez trozos de alitas bañadas en salsa y acompañadas de papas crujientes.', precio: 26, opciones: [SABORES_ALITAS, PROMO_BEBIDAS_WINGS] },
+      { id: 'wings-combo-triple', nombre: 'Combo Wings Triple', descripcion: 'Quince trozos de alitas bañadas en salsa y acompañadas de papas crujientes.', precio: 40, opciones: [SABORES_ALITAS, PROMO_BEBIDAS_WINGS] },
     ],
   },
   {
@@ -90,13 +239,13 @@ export const MENU_DATA: Category[] = [
     eyebrow: 'Chaufas, plancha y saltados',
     descripcion: 'Agrega huevo y plátano por S/ 3.00.',
     items: [
-      { id: 'chaufa-pollo', nombre: 'Chaufa de pollo', precio: 13 },
-      { id: 'chaufa-carne', nombre: 'Chaufa de carne', precio: 15 },
-      { id: 'chaufa-charapa', nombre: 'Chaufa charapa', precio: 17 },
-      { id: 'chaufa-broster', nombre: 'Chaufa broster', descripcion: 'Con presa de pecho o entrepierna.', precio: 22 },
-      { id: 'pollo-plancha', nombre: 'Pollo a la plancha', precio: 13 },
-      { id: 'lomo-pollo', nombre: 'Lomo saltado de pollo', precio: 16 },
-      { id: 'lomo-carne', nombre: 'Lomo saltado de carne', precio: 18 },
+      { id: 'chaufa-pollo', nombre: 'Chaufa de pollo', precio: 13, opciones: [ADICIONAL_CRIOLLO] },
+      { id: 'chaufa-carne', nombre: 'Chaufa de carne', precio: 15, opciones: [ADICIONAL_CRIOLLO] },
+      { id: 'chaufa-charapa', nombre: 'Chaufa charapa', precio: 17, opciones: [ADICIONAL_CRIOLLO] },
+      { id: 'chaufa-broster', nombre: 'Chaufa broster', descripcion: 'Con presa de pecho o entrepierna.', precio: 22, opciones: [{ id: 'presa', nombre: 'Elige tu presa', tipo: 'single', requerida: true, opciones: [{ id: 'pecho', nombre: 'Pecho' }, { id: 'entrepierna', nombre: 'Entrepierna' }] }, ADICIONAL_CRIOLLO] },
+      { id: 'pollo-plancha', nombre: 'Pollo a la plancha', precio: 13, opciones: [ADICIONAL_CRIOLLO] },
+      { id: 'lomo-pollo', nombre: 'Lomo saltado de pollo', precio: 16, opciones: [ADICIONAL_CRIOLLO] },
+      { id: 'lomo-carne', nombre: 'Lomo saltado de carne', precio: 18, opciones: [ADICIONAL_CRIOLLO] },
     ],
   },
   {
@@ -105,8 +254,8 @@ export const MENU_DATA: Category[] = [
     eyebrow: 'Prácticos, completos y listos para llevar',
     descripcion: 'Combos en cono con bebida y papas.',
     items: [
-      { id: 'cono-monkey', nombre: 'Cono Monkey', descripcion: 'Cinco alitas del sabor que elijas, una bebida de limonada, fresa o piña y una porción de papas.', precio: 20 },
-      { id: 'cono-salchicha', nombre: 'Cono Salchicha', descripcion: 'Porción de papas, porción de salchicha y una bebida de limonada, fresa o piña.', precio: 18 },
+      { id: 'cono-monkey', nombre: 'Cono Monkey', descripcion: 'Cinco alitas del sabor que elijas, una bebida de limonada, fresa o piña y una porción de papas.', precio: 20, opciones: [SABORES_ALITAS, BEBIDA_CONO] },
+      { id: 'cono-salchicha', nombre: 'Cono Salchicha', descripcion: 'Porción de papas, porción de salchicha y una bebida de limonada, fresa o piña.', precio: 18, opciones: [BEBIDA_CONO] },
     ],
   },
   {
@@ -115,14 +264,14 @@ export const MENU_DATA: Category[] = [
     eyebrow: 'Frías, calientes y naturales',
     descripcion: 'Jugos, limonadas, frozen, gaseosas y bebidas calientes.',
     items: [
-      { id: 'beb-jugos-clasicos', nombre: 'Jugos clásicos', descripcion: 'Piña, fresa o papaya.', precio: 7 },
-      { id: 'beb-limonadas', nombre: 'Limonadas', descripcion: 'Limón, fresa o piña.', precio: 8 },
-      { id: 'beb-frozen', nombre: 'Frozen', descripcion: 'Limón, fresa o maracuyá.', precio: 10 },
-      { id: 'beb-especiales', nombre: 'Especiales', descripcion: 'Maracumango o hierba luisa.', precio: 11 },
-      { id: 'beb-milkshake', nombre: 'Milkshake', descripcion: 'Oreo, vainilla, chocolate o fresa.', precio: 11 },
-      { id: 'beb-gaseosa-600', nombre: 'Gaseosa 600 ml', descripcion: 'Inca Kola o Coca-Cola.', precio: 4 },
-      { id: 'beb-gaseosa-1l', nombre: 'Gaseosa 1 L', descripcion: 'Inca Kola o Coca-Cola.', precio: 8 },
-      { id: 'beb-infusiones', nombre: 'Infusiones calientes', descripcion: 'Anís, manzanilla o hierba luisa.', precio: 3.5 },
+      { id: 'beb-jugos-clasicos', nombre: 'Jugos clásicos', descripcion: 'Piña, fresa o papaya.', precio: 7, opciones: [{ id: 'sabor', nombre: 'Elige un sabor', tipo: 'single', requerida: true, opciones: [{ id: 'pina', nombre: 'Piña' }, { id: 'fresa', nombre: 'Fresa' }, { id: 'papaya', nombre: 'Papaya' }] }] },
+      { id: 'beb-limonadas', nombre: 'Limonadas', descripcion: 'Limón, fresa o piña.', precio: 8, opciones: [{ id: 'sabor', nombre: 'Elige un sabor', tipo: 'single', requerida: true, opciones: [{ id: 'limon', nombre: 'Limón' }, { id: 'fresa', nombre: 'Fresa' }, { id: 'pina', nombre: 'Piña' }] }] },
+      { id: 'beb-frozen', nombre: 'Frozen', descripcion: 'Limón, fresa o maracuyá.', precio: 10, opciones: [{ id: 'sabor', nombre: 'Elige un sabor', tipo: 'single', requerida: true, opciones: [{ id: 'limon', nombre: 'Limón' }, { id: 'fresa', nombre: 'Fresa' }, { id: 'maracuya', nombre: 'Maracuyá' }] }] },
+      { id: 'beb-especiales', nombre: 'Especiales', descripcion: 'Maracumango o hierba luisa.', precio: 11, opciones: [{ id: 'sabor', nombre: 'Elige un sabor', tipo: 'single', requerida: true, opciones: [{ id: 'maracumango', nombre: 'Maracumango' }, { id: 'hierba-luisa', nombre: 'Hierba luisa' }] }] },
+      { id: 'beb-milkshake', nombre: 'Milkshake', descripcion: 'Oreo, vainilla, chocolate o fresa.', precio: 11, opciones: [{ id: 'sabor', nombre: 'Elige un sabor', tipo: 'single', requerida: true, opciones: [{ id: 'oreo', nombre: 'Oreo' }, { id: 'vainilla', nombre: 'Vainilla' }, { id: 'chocolate', nombre: 'Chocolate' }, { id: 'fresa', nombre: 'Fresa' }] }] },
+      { id: 'beb-gaseosa-600', nombre: 'Gaseosa 600 ml', descripcion: 'Inca Kola o Coca-Cola.', precio: 4, opciones: [{ id: 'gaseosa', nombre: 'Elige tu gaseosa', tipo: 'single', requerida: true, opciones: [{ id: 'inka-kola', nombre: 'Inka Kola' }, { id: 'coca-cola', nombre: 'Coca-Cola' }] }] },
+      { id: 'beb-gaseosa-1l', nombre: 'Gaseosa 1 L', descripcion: 'Inca Kola o Coca-Cola.', precio: 8, opciones: [{ id: 'gaseosa', nombre: 'Elige tu gaseosa', tipo: 'single', requerida: true, opciones: [{ id: 'inka-kola', nombre: 'Inka Kola' }, { id: 'coca-cola', nombre: 'Coca-Cola' }] }] },
+      { id: 'beb-infusiones', nombre: 'Infusiones calientes', descripcion: 'Anís, manzanilla o hierba luisa.', precio: 3.5, opciones: [{ id: 'sabor', nombre: 'Elige una infusión', tipo: 'single', requerida: true, opciones: [{ id: 'anis', nombre: 'Anís' }, { id: 'manzanilla', nombre: 'Manzanilla' }, { id: 'hierba-luisa', nombre: 'Hierba luisa' }] }] },
       { id: 'beb-cafe', nombre: 'Café', precio: 5 },
       { id: 'beb-agua', nombre: 'Agua 500 ml', precio: 3 },
     ],
