@@ -14,7 +14,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import { CATEGORY_UPSELLS, MENU_DATA, type CategoryUpsell, type Dish } from './data/menuData';
+import { CATEGORY_UPSELLS, MENU_DATA, type Dish, type DishOption } from './data/menuData';
 
 const WHATSAPP_NUMBER = '51957669038';
 const INSTAGRAM_URL = 'https://www.instagram.com/monkeyrollperu/';
@@ -26,19 +26,42 @@ interface CartSelection {
   values: string[];
 }
 
+interface CartExtra {
+  id: string;
+  nombre: string;
+  precio: number;
+  selections: CartSelection[];
+}
+
 interface CartItem {
   key: string;
   dishId: string;
   categoryId: string;
-  upsellId?: string;
   nombre: string;
   precio: number;
   cantidad: number;
   selections: CartSelection[];
+  extras: CartExtra[];
   nota?: string;
 }
 
 const money = (value: number) => `S/ ${value.toFixed(2)}`;
+
+const resolveSelections = (options: DishOption[] | undefined, selected: Record<string, string[]>) => (
+  (options ?? []).flatMap((option) => {
+    const values = (selected[option.id] ?? [])
+      .map((choiceId) => option.opciones.find((choice) => choice.id === choiceId)?.nombre)
+      .filter((value): value is string => Boolean(value));
+    return values.length ? [{ label: option.nombre, values }] : [];
+  })
+);
+
+const optionExtraPrice = (options: DishOption[] | undefined, selected: Record<string, string[]>) => (
+  (options ?? []).reduce((sum, option) => sum + (selected[option.id] ?? []).reduce(
+    (optionSum, choiceId) => optionSum + (option.opciones.find((choice) => choice.id === choiceId)?.precioExtra ?? 0),
+    0,
+  ), 0)
+);
 
 export default function App() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -47,7 +70,6 @@ export default function App() {
   const [addedItem, setAddedItem] = useState<string | null>(null);
   const [configuringDish, setConfiguringDish] = useState<Dish | null>(null);
   const [configuringCategoryId, setConfiguringCategoryId] = useState<string | null>(null);
-  const [configuringUpsell, setConfiguringUpsell] = useState<CategoryUpsell | null>(null);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
   const [selectedUpsells, setSelectedUpsells] = useState<Record<string, Record<string, string[]>>>({});
   const [note, setNote] = useState('');
@@ -71,26 +93,13 @@ export default function App() {
     [selectedCategoryId],
   );
 
-  const availableUpsells = useMemo(
-    () => CATEGORY_UPSELLS.filter((upsell) => {
-      const hasQualifyingProduct = cartItems.some((item) => (
-        !item.upsellId
-        && item.categoryId === upsell.categoryId
-        && (!upsell.productosElegibles || upsell.productosElegibles.includes(item.dishId))
-      ));
-      const alreadyAdded = cartItems.some((item) => item.upsellId === upsell.id);
-      return hasQualifyingProduct && !alreadyAdded;
-    }),
-    [cartItems],
-  );
-
   const configuratorUpsells = useMemo(() => {
-    if (!configuringDish || !configuringCategoryId || configuringUpsell) return [];
+    if (!configuringDish || !configuringCategoryId) return [];
     return CATEGORY_UPSELLS.filter((upsell) => (
       upsell.categoryId === configuringCategoryId
       && (!upsell.productosElegibles || upsell.productosElegibles.includes(configuringDish.id))
     ));
-  }, [configuringCategoryId, configuringDish, configuringUpsell]);
+  }, [configuringCategoryId, configuringDish]);
 
   const customerReady = useMemo(() => (
     pickupSelected
@@ -116,25 +125,14 @@ export default function App() {
   }, [cartOpen, configuringDish]);
 
   const changeQuantity = (key: string, delta: number) => {
-    setCartItems((current) => {
-      const updated = current
-        .map((item) => item.key === key ? { ...item, cantidad: item.cantidad + delta } : item)
-        .filter((item) => item.cantidad > 0);
-      const validUpsells = new Set(CATEGORY_UPSELLS
-        .filter((upsell) => updated.some((item) => (
-          !item.upsellId
-          && item.categoryId === upsell.categoryId
-          && (!upsell.productosElegibles || upsell.productosElegibles.includes(item.dishId))
-        )))
-        .map((upsell) => upsell.id));
-      return updated.filter((item) => !item.upsellId || validUpsells.has(item.upsellId));
-    });
+    setCartItems((current) => current
+      .map((item) => item.key === key ? { ...item, cantidad: item.cantidad + delta } : item)
+      .filter((item) => item.cantidad > 0));
   };
 
   const closeConfigurator = () => {
     setConfiguringDish(null);
     setConfiguringCategoryId(null);
-    setConfiguringUpsell(null);
     setSelections({});
     setSelectedUpsells({});
     setNote('');
@@ -146,21 +144,12 @@ export default function App() {
     selected: Record<string, string[]>,
     itemNote: string,
     categoryId: string,
-    upsellId?: string,
+    extras: CartExtra[] = [],
   ) => {
-    const resolvedSelections = (dish.opciones ?? []).flatMap((option) => {
-      const choiceIds = selected[option.id] ?? [];
-      const values = choiceIds
-        .map((choiceId) => option.opciones.find((choice) => choice.id === choiceId)?.nombre)
-        .filter((value): value is string => Boolean(value));
-      return values.length ? [{ label: option.nombre, values }] : [];
-    });
-    const extraPrice = (dish.opciones ?? []).reduce((sum, option) => sum + (selected[option.id] ?? []).reduce(
-      (optionSum, choiceId) => optionSum + (option.opciones.find((choice) => choice.id === choiceId)?.precioExtra ?? 0),
-      0,
-    ), 0);
+    const resolvedSelections = resolveSelections(dish.opciones, selected);
+    const extraPrice = optionExtraPrice(dish.opciones, selected) + extras.reduce((sum, extra) => sum + extra.precio, 0);
     const cleanNote = itemNote.trim();
-    const key = JSON.stringify([dish.id, selected, cleanNote, upsellId ?? null]);
+    const key = JSON.stringify([dish.id, selected, cleanNote, extras]);
 
     setCartItems((current) => {
       const existing = current.find((item) => item.key === key);
@@ -171,11 +160,11 @@ export default function App() {
         key,
         dishId: dish.id,
         categoryId,
-        upsellId,
         nombre: dish.nombre,
         precio: dish.precio + extraPrice,
         cantidad: 1,
         selections: resolvedSelections,
+        extras,
         nota: cleanNote || undefined,
       }];
     });
@@ -191,28 +180,6 @@ export default function App() {
     }
     setConfiguringDish(dish);
     setConfiguringCategoryId(categoryId);
-    setConfiguringUpsell(null);
-    setSelections({});
-    setSelectedUpsells({});
-    setNote('');
-    setConfigurationError('');
-  };
-
-  const openUpsell = (upsell: CategoryUpsell) => {
-    const dish: Dish = {
-      id: `upsell-${upsell.id}`,
-      nombre: upsell.nombre,
-      descripcion: upsell.descripcion,
-      precio: upsell.precio,
-      opciones: upsell.opciones,
-    };
-    if (!upsell.opciones?.length) {
-      addConfiguredDish(dish, {}, '', upsell.categoryId, upsell.id);
-      return;
-    }
-    setConfiguringDish(dish);
-    setConfiguringCategoryId(upsell.categoryId);
-    setConfiguringUpsell(upsell);
     setSelections({});
     setSelectedUpsells({});
     setNote('');
@@ -277,43 +244,38 @@ export default function App() {
       return;
     }
 
-    if (!configuringUpsell) {
-      const incompleteUpsell = configuratorUpsells.find((upsell) => {
-        const upsellSelections = selectedUpsells[upsell.id];
-        if (!upsellSelections) return false;
-        return (upsell.opciones ?? []).some((option) => {
-          const selectedCount = upsellSelections[option.id]?.length ?? 0;
-          const minimum = option.minimo ?? (option.requerida ? 1 : 0);
-          return selectedCount < minimum;
-        });
+    const incompleteUpsell = configuratorUpsells.find((upsell) => {
+      const upsellSelections = selectedUpsells[upsell.id];
+      if (!upsellSelections) return false;
+      return (upsell.opciones ?? []).some((option) => {
+        const selectedCount = upsellSelections[option.id]?.length ?? 0;
+        const minimum = option.minimo ?? (option.requerida ? 1 : 0);
+        return selectedCount < minimum;
       });
-      if (incompleteUpsell) {
-        setConfigurationError(`Completa las opciones de: ${incompleteUpsell.nombre}.`);
-        return;
-      }
+    });
+    if (incompleteUpsell) {
+      setConfigurationError(`Completa las opciones de: ${incompleteUpsell.nombre}.`);
+      return;
     }
+
+    const extras = configuratorUpsells.flatMap((upsell): CartExtra[] => {
+      const upsellSelections = selectedUpsells[upsell.id];
+      if (!upsellSelections) return [];
+      return [{
+        id: upsell.id,
+        nombre: upsell.nombre,
+        precio: upsell.precio + optionExtraPrice(upsell.opciones, upsellSelections),
+        selections: resolveSelections(upsell.opciones, upsellSelections),
+      }];
+    });
 
     addConfiguredDish(
       configuringDish,
       selections,
-      configuringUpsell ? '' : note,
-      configuringUpsell?.categoryId ?? configuringCategoryId ?? '',
-      configuringUpsell?.id,
+      note,
+      configuringCategoryId ?? '',
+      extras,
     );
-
-    if (!configuringUpsell) {
-      configuratorUpsells.forEach((upsell) => {
-        const upsellSelections = selectedUpsells[upsell.id];
-        if (!upsellSelections) return;
-        addConfiguredDish({
-          id: `upsell-${upsell.id}`,
-          nombre: upsell.nombre,
-          descripcion: upsell.descripcion,
-          precio: upsell.precio,
-          opciones: upsell.opciones,
-        }, upsellSelections, '', upsell.categoryId, upsell.id);
-      });
-    }
     closeConfigurator();
   };
 
@@ -325,6 +287,12 @@ export default function App() {
     }
     const lines = cartItems.flatMap((item) => {
       const details = item.selections.map((selection) => `   ${selection.label}: ${selection.values.join(', ')}`);
+      item.extras.forEach((extra) => {
+        details.push(`   + ${extra.nombre} — ${money(extra.precio)}`);
+        extra.selections.forEach((selection) => {
+          details.push(`      ${selection.label}: ${selection.values.join(', ')}`);
+        });
+      });
       if (item.nota) details.push(`   Nota: ${item.nota}`);
       return [`• ${item.cantidad} × ${item.nombre} — ${money(item.precio * item.cantidad)}`, ...details];
     });
@@ -557,6 +525,16 @@ export default function App() {
                         {item.selections.map((selection) => (
                           <small key={selection.label}><strong>{selection.label}:</strong> {selection.values.join(', ')}</small>
                         ))}
+                        {item.extras.map((extra) => (
+                          <div className="cart-item-extra" key={extra.id}>
+                            <small><strong>+ {extra.nombre}</strong> · {money(extra.precio)}</small>
+                            {extra.selections.map((selection) => (
+                              <small key={`${extra.id}-${selection.label}`}>
+                                <strong>{selection.label}:</strong> {selection.values.join(', ')}
+                              </small>
+                            ))}
+                          </div>
+                        ))}
                         {item.nota && <small><strong>Nota:</strong> {item.nota}</small>}
                       </div>
                       <div className="quantity-control" aria-label={`Cantidad de ${item.nombre}`}>
@@ -571,32 +549,6 @@ export default function App() {
                   ))}
                 </div>
                 <div className="cart-summary">
-                  {availableUpsells.length > 0 && (
-                    <section className="upsell-section" aria-labelledby="upsell-title">
-                      <div className="upsell-heading">
-                        <strong id="upsell-title">¿Algo más?</strong>
-                        <small>Adicionales disponibles</small>
-                      </div>
-                      <div className="upsell-list">
-                        {availableUpsells.map((upsell) => (
-                          <article className="upsell-card" key={upsell.id}>
-                            <div>
-                              <strong>{upsell.nombre}</strong>
-                              <p>{upsell.descripcion}</p>
-                              <span>+ {money(upsell.precio)}</span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => openUpsell(upsell)}
-                              aria-label={`Agregar ${upsell.nombre}`}
-                            >
-                              <Plus size={19} />
-                            </button>
-                          </article>
-                        ))}
-                      </div>
-                    </section>
-                  )}
                   <div className="fulfillment-options" aria-label="Modalidad del pedido">
                     <button
                       className={`fulfillment-choice ${pickupSelected ? 'selected' : ''}`}
@@ -648,11 +600,15 @@ export default function App() {
                         <span>Número de teléfono</span>
                         <input
                           type="tel"
-                          inputMode="tel"
+                          inputMode="numeric"
                           autoComplete="tel"
+                          pattern="[0-9]*"
+                          maxLength={9}
                           value={customer.telefono}
-                          onChange={(event) => {
-                            setCustomer((current) => ({ ...current, telefono: event.target.value }));
+                          onInput={(event) => {
+                            const telefono = event.currentTarget.value.replace(/\D/g, '').slice(0, 9);
+                            event.currentTarget.value = telefono;
+                            setCustomer((current) => ({ ...current, telefono }));
                             setCustomerError('');
                           }}
                         />
@@ -684,7 +640,7 @@ export default function App() {
           <section className="config-dialog" role="dialog" aria-modal="true" aria-labelledby="config-title">
             <div className="config-header">
               <div>
-                <p>{configuringUpsell ? 'Completa tu adicional' : 'Personaliza tu pedido'}</p>
+                <p>Personaliza tu pedido</p>
                 <h2 id="config-title">{configuringDish.nombre}</h2>
                 <span>Desde {money(configuringDish.precio)}</span>
               </div>
@@ -723,7 +679,7 @@ export default function App() {
                 );
               })}
 
-              {!configuringUpsell && configuratorUpsells.length > 0 && (
+              {configuratorUpsells.length > 0 && (
                 <section className="config-upsells" aria-labelledby="config-upsells-title">
                   <div className="config-upsells-heading">
                     <div>
@@ -795,7 +751,7 @@ export default function App() {
                 </section>
               )}
 
-              {configuringCategoryId !== 'bebidas' && !configuringUpsell && (
+              {configuringCategoryId !== 'bebidas' && (
                 <label className="note-field">
                   <span>Nota para cocina <small>Opcional</small></span>
                   <textarea
@@ -814,7 +770,7 @@ export default function App() {
 
             <div className="config-footer">
               <button type="button" onClick={confirmConfiguration}>
-                {configuringUpsell ? 'Agregar adicional' : 'Agregar al pedido'} <Plus size={18} />
+                Agregar al pedido <Plus size={18} />
               </button>
             </div>
           </section>

@@ -1053,6 +1053,29 @@ a:focus-visible {
   color: var(--ink);
 }
 
+.cart-item-extra {
+  margin-top: 8px;
+  padding: 8px 9px;
+  border-left: 3px solid var(--yellow);
+  border-radius: 0 8px 8px 0;
+  background: #fff9dc;
+}
+
+.cart-item-extra small {
+  display: block;
+  color: #625d52;
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.cart-item-extra small + small {
+  margin-top: 3px;
+}
+
+.cart-item-extra strong {
+  color: var(--ink);
+}
+
 .quantity-control {
   display: inline-flex;
   align-items: center;
@@ -1101,13 +1124,6 @@ a:focus-visible {
   background: white;
 }
 
-.upsell-section {
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--line);
-}
-
-.upsell-heading,
 .customer-form-heading {
   display: flex;
   align-items: baseline;
@@ -1116,7 +1132,6 @@ a:focus-visible {
   margin-bottom: 11px;
 }
 
-.upsell-heading strong,
 .customer-form-heading strong {
   font-family: var(--condensed);
   font-size: 1.05rem;
@@ -1124,60 +1139,12 @@ a:focus-visible {
   text-transform: uppercase;
 }
 
-.upsell-heading small,
 .customer-form-heading small {
   color: #796600;
   font-size: 0.64rem;
   font-weight: 900;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-}
-
-.upsell-list {
-  display: grid;
-  gap: 9px;
-}
-
-.upsell-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 13px;
-  padding: 13px 14px;
-  border: 1px solid #d9d2c4;
-  border-radius: 13px;
-  background: #fffdf5;
-}
-
-.upsell-card > div > strong {
-  display: block;
-  font-size: 0.85rem;
-}
-
-.upsell-card p {
-  margin: 3px 0 5px;
-  color: var(--muted);
-  font-size: 0.69rem;
-  line-height: 1.35;
-}
-
-.upsell-card span {
-  color: #796600;
-  font-size: 0.73rem;
-  font-weight: 900;
-}
-
-.upsell-card button {
-  display: grid;
-  width: 39px;
-  height: 39px;
-  place-items: center;
-  border: 0;
-  border-radius: 50%;
-  background: var(--yellow);
-  color: var(--ink);
-  cursor: pointer;
-  box-shadow: 0 3px 0 var(--ink);
 }
 
 .cart-total {
@@ -1390,7 +1357,7 @@ a:focus-visible {
   width: min(100%, 610px);
   max-height: min(820px, calc(100dvh - 44px));
   flex-direction: column;
-  overflow: hidden;
+  overflow: clip;
   border-radius: 22px;
   background: var(--paper);
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
@@ -1449,6 +1416,8 @@ a:focus-visible {
 }
 
 .config-content {
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 6px 26px 24px;
   overflow-y: auto;
 }
@@ -2102,7 +2071,8 @@ a:focus-visible {
 
   .config-dialog {
     width: 100%;
-    max-height: 94dvh;
+    height: auto;
+    max-height: calc(100svh - 8px);
     border-radius: 24px 24px 0 0;
     animation-name: drawer-up;
   }
@@ -2132,7 +2102,8 @@ a:focus-visible {
   }
 
   .config-footer {
-    padding: 14px 18px max(18px, env(safe-area-inset-bottom));
+    flex: 0 0 auto;
+    padding: 14px 18px 18px;
   }
 }
 
