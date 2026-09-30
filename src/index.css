@@ -1094,9 +1094,90 @@ a:focus-visible {
 }
 
 .cart-summary {
+  max-height: 68svh;
   padding: 22px 26px 28px;
+  overflow-y: auto;
   border-top: 1px solid var(--line);
   background: white;
+}
+
+.upsell-section {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.upsell-heading,
+.customer-form-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 11px;
+}
+
+.upsell-heading strong,
+.customer-form-heading strong {
+  font-family: var(--condensed);
+  font-size: 1.05rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.upsell-heading small,
+.customer-form-heading small {
+  color: #796600;
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.upsell-list {
+  display: grid;
+  gap: 9px;
+}
+
+.upsell-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 14px;
+  border: 1px solid #d9d2c4;
+  border-radius: 13px;
+  background: #fffdf5;
+}
+
+.upsell-card > div > strong {
+  display: block;
+  font-size: 0.85rem;
+}
+
+.upsell-card p {
+  margin: 3px 0 5px;
+  color: var(--muted);
+  font-size: 0.69rem;
+  line-height: 1.35;
+}
+
+.upsell-card span {
+  color: #796600;
+  font-size: 0.73rem;
+  font-weight: 900;
+}
+
+.upsell-card button {
+  display: grid;
+  width: 39px;
+  height: 39px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--ink);
 }
 
 .cart-total {
@@ -1133,6 +1214,11 @@ a:focus-visible {
   padding: 12px;
   border: 1px solid var(--line);
   border-radius: 13px;
+  background: white;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
 }
 
 .fulfillment-choice strong {
@@ -1163,12 +1249,64 @@ a:focus-visible {
 .fulfillment-choice.disabled {
   color: #9e9a91;
   background: #f1f0eb;
+  cursor: not-allowed;
   text-decoration: line-through;
 }
 
 .fulfillment-choice.disabled small {
   color: #8a7200;
   text-decoration: none;
+}
+
+.customer-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid var(--ink);
+  border-radius: 14px;
+  background: #fffbea;
+}
+
+.customer-form-heading,
+.customer-phone,
+.customer-error {
+  grid-column: 1 / -1;
+}
+
+.customer-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.customer-form label > span {
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.customer-form input {
+  width: 100%;
+  min-height: 43px;
+  padding: 10px 11px;
+  border: 1px solid #d1c8b7;
+  border-radius: 10px;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+}
+
+.customer-form input:focus {
+  border-color: var(--ink);
+  outline: 3px solid rgba(255, 210, 0, 0.42);
+}
+
+.customer-error {
+  margin: 0;
+  color: #852c18;
+  font-size: 0.72rem;
+  font-weight: 900;
 }
 
 .cart-summary > p {
@@ -1195,6 +1333,13 @@ a:focus-visible {
 
 .cart-summary > button:hover {
   background: #18a84e;
+}
+
+.cart-summary > button:disabled,
+.cart-summary > button:disabled:hover {
+  background: #a8aaa9;
+  cursor: not-allowed;
+  opacity: 0.68;
 }
 
 .empty-cart {
@@ -1804,6 +1949,21 @@ a:focus-visible {
 
   .cart-item {
     grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .cart-summary {
+    max-height: 70svh;
+    padding: 18px 18px max(22px, env(safe-area-inset-bottom));
+  }
+
+  .customer-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .customer-form-heading,
+  .customer-phone,
+  .customer-error {
+    grid-column: auto;
   }
 
   .delete-item {
