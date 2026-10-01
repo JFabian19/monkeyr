@@ -428,10 +428,24 @@ export default function App() {
                 <div className={`product-grid ${selectedCategory.items.length === 1 ? 'single-product' : ''}`}>
                   {selectedCategory.items.map((dish) => (
                     <article className="product-card" key={dish.id}>
-                      <div className="product-media" aria-label={`Espacio reservado para la imagen de ${dish.nombre}`}>
-                        <Camera size={25} strokeWidth={1.5} />
-                        <strong>ACÁ VA LA IMAGEN</strong>
-                        <span>Foto de {dish.nombre}</span>
+                      <div
+                        className={`product-media ${dish.imagen ? 'has-image' : ''}`}
+                        aria-label={dish.imagen ? dish.nombre : `Espacio reservado para la imagen de ${dish.nombre}`}
+                      >
+                        {dish.imagen ? (
+                          <img
+                            src={dish.imagen}
+                            alt={dish.nombre}
+                            className="product-image"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <>
+                            <Camera size={25} strokeWidth={1.5} />
+                            <strong>ACÁ VA LA IMAGEN</strong>
+                            <span>Foto de {dish.nombre}</span>
+                          </>
+                        )}
                       </div>
                       <div className="product-body">
                         <div className="product-title-row">

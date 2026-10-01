@@ -4,6 +4,7 @@ export interface Dish {
   descripcion?: string;
   precio: number;
   opciones?: DishOption[];
+  imagen?: string;
 }
 
 export interface DishOptionChoice {
@@ -143,6 +144,7 @@ export const MENU_DATA: Category[] = [
         nombre: 'La Parrillera',
         descripcion: 'Carne tradicional, queso o huevo, chorizo y salsa chimichurri.',
         precio: 15,
+        imagen: '/dishes/la-parrillera.jpg',
         opciones: [{
           id: 'queso-o-huevo',
           nombre: 'Elige queso o huevo',
@@ -151,11 +153,11 @@ export const MENU_DATA: Category[] = [
           opciones: [{ id: 'queso', nombre: 'Queso' }, { id: 'huevo', nombre: 'Huevo' }],
         }],
       },
-      { id: 'hamb-la-power', nombre: 'La Power', descripcion: 'Doble carne tradicional, doble queso cheddar y doble tocino.', precio: 22 },
-      { id: 'hamb-la-crunchy', nombre: 'La Crunchy - Crispy', descripcion: 'Pollo crispy, queso cheddar y salsa BBQ.', precio: 15 },
-      { id: 'hamb-la-original', nombre: 'La Original', descripcion: 'Carne tradicional.', precio: 12 },
-      { id: 'hamb-la-tropical', nombre: 'La Tropical - Hawaiana', descripcion: 'Carne tradicional, queso y piña.', precio: 14 },
-      { id: 'hamb-la-peruana', nombre: 'La Peruana - A lo pobre', descripcion: 'Carne tradicional, huevo y plátano.', precio: 14 },
+      { id: 'hamb-la-power', nombre: 'La Power', descripcion: 'Doble carne tradicional, doble queso cheddar y doble tocino.', precio: 22, imagen: '/dishes/la-power.jpg' },
+      { id: 'hamb-la-crunchy', nombre: 'La Crunchy - Crispy', descripcion: 'Pollo crispy, queso cheddar y salsa BBQ.', precio: 15, imagen: '/dishes/la-crunchy.jpg' },
+      { id: 'hamb-la-original', nombre: 'La Original', descripcion: 'Carne tradicional.', precio: 12, imagen: '/dishes/la-original.jpg' },
+      { id: 'hamb-la-tropical', nombre: 'La Tropical - Hawaiana', descripcion: 'Carne tradicional, queso y piña.', precio: 14, imagen: '/dishes/la-tropical.jpg' },
+      { id: 'hamb-la-peruana', nombre: 'La Peruana - A lo pobre', descripcion: 'Carne tradicional, huevo y plátano.', precio: 14, imagen: '/dishes/la-peruana.jpg' },
     ],
   },
   {
@@ -257,11 +259,11 @@ export const MENU_DATA: Category[] = [
     eyebrow: 'Alitas bañadas en tu salsa favorita',
     descripcion: 'Elige entre BBQ, búfalo, mango fuego, mango princesa, maracuyá, maracuyá hot, chimichurri o acevichada.',
     items: [
-      { id: 'wings-clasicas', nombre: 'Las Clásicas', descripcion: 'Cinco trozos de pollo bañados en salsa y acompañados de papas crujientes.', precio: 15, opciones: [SABORES_ALITAS] },
-      { id: 'wings-salchialitas', nombre: 'Salchialitas', descripcion: 'Cinco alitas del sabor que elijas, papas y salchicha frankfurter.', precio: 17, opciones: [SABORES_ALITAS] },
-      { id: 'wings-mostrialitas', nombre: 'Mostrialitas', descripcion: 'Cinco alitas del sabor que elijas, papas y una porción de chaufa.', precio: 20, opciones: [SABORES_ALITAS] },
-      { id: 'wings-combo', nombre: 'Combo Wings', descripcion: 'Diez trozos de alitas bañadas en salsa y acompañadas de papas crujientes.', precio: 26, opciones: [SABORES_ALITAS] },
-      { id: 'wings-combo-triple', nombre: 'Combo Wings Triple', descripcion: 'Quince trozos de alitas bañadas en salsa y acompañadas de papas crujientes.', precio: 40, opciones: [SABORES_ALITAS] },
+      { id: 'wings-clasicas', nombre: 'Las Clásicas', descripcion: 'Cinco trozos de pollo bañados en salsa y acompañados de papas crujientes.', precio: 15, opciones: [SABORES_ALITAS], imagen: '/dishes/wings-clasicas.jpg' },
+      { id: 'wings-salchialitas', nombre: 'Salchialitas', descripcion: 'Cinco alitas del sabor que elijas, papas y salchicha frankfurter.', precio: 17, opciones: [SABORES_ALITAS], imagen: '/dishes/wings-salchialitas.jpg' },
+      { id: 'wings-mostrialitas', nombre: 'Mostrialitas', descripcion: 'Cinco alitas del sabor que elijas, papas y una porción de chaufa.', precio: 20, opciones: [SABORES_ALITAS], imagen: '/dishes/wings-mostrialitas.jpg' },
+      { id: 'wings-combo', nombre: 'Combo Wings', descripcion: 'Diez trozos de alitas bañadas en salsa y acompañadas de papas crujientes.', precio: 26, opciones: [SABORES_ALITAS], imagen: '/dishes/wings-combo.jpg' },
+      { id: 'wings-combo-triple', nombre: 'Combo Wings Triple', descripcion: 'Quince trozos de alitas bañadas en salsa y acompañadas de papas crujientes.', precio: 40, opciones: [SABORES_ALITAS], imagen: '/dishes/wings-combo-triple.jpg' },
     ],
   },
   {
@@ -270,13 +272,13 @@ export const MENU_DATA: Category[] = [
     eyebrow: 'Chaufas, plancha y saltados',
     descripcion: 'Agrega huevo y plátano por S/ 3.00.',
     items: [
-      { id: 'chaufa-pollo', nombre: 'Chaufa de pollo', precio: 13 },
-      { id: 'chaufa-carne', nombre: 'Chaufa de carne', precio: 15 },
-      { id: 'chaufa-charapa', nombre: 'Chaufa charapa', precio: 17 },
-      { id: 'chaufa-broster', nombre: 'Chaufa broster', descripcion: 'Con presa de pecho o entrepierna.', precio: 22, opciones: [{ id: 'presa', nombre: 'Elige tu presa', tipo: 'single', requerida: true, opciones: [{ id: 'pecho', nombre: 'Pecho' }, { id: 'entrepierna', nombre: 'Entrepierna' }] }] },
-      { id: 'pollo-plancha', nombre: 'Pollo a la plancha', precio: 13 },
-      { id: 'lomo-pollo', nombre: 'Lomo saltado de pollo', precio: 16 },
-      { id: 'lomo-carne', nombre: 'Lomo saltado de carne', precio: 18 },
+      { id: 'chaufa-pollo', nombre: 'Chaufa de pollo', precio: 13, imagen: '/dishes/chaufa-pollo.jpg' },
+      { id: 'chaufa-carne', nombre: 'Chaufa de carne', precio: 15, imagen: '/dishes/chaufa-carne.jpg' },
+      { id: 'chaufa-charapa', nombre: 'Chaufa charapa', precio: 17, imagen: '/dishes/chaufa-charapa.jpg' },
+      { id: 'chaufa-broster', nombre: 'Chaufa broster', descripcion: 'Con presa de pecho o entrepierna.', precio: 22, imagen: '/dishes/chaufa-broster.jpg', opciones: [{ id: 'presa', nombre: 'Elige tu presa', tipo: 'single', requerida: true, opciones: [{ id: 'pecho', nombre: 'Pecho' }, { id: 'entrepierna', nombre: 'Entrepierna' }] }] },
+      { id: 'pollo-plancha', nombre: 'Pollo a la plancha', precio: 13, imagen: '/dishes/pollo-plancha.jpg' },
+      { id: 'lomo-pollo', nombre: 'Lomo saltado de pollo', precio: 16, imagen: '/dishes/lomo-pollo.jpg' },
+      { id: 'lomo-carne', nombre: 'Lomo saltado de carne', precio: 18, imagen: '/dishes/lomo-carne.jpg' },
     ],
   },
   {
