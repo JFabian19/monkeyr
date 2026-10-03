@@ -13,6 +13,7 @@ import {
   Sparkles,
   Trash2,
   X,
+  ZoomIn,
 } from 'lucide-react';
 import { CATEGORY_UPSELLS, MENU_DATA, type Dish, type DishOption } from './data/menuData';
 
@@ -43,6 +44,16 @@ interface CartItem {
   selections: CartSelection[];
   extras: CartExtra[];
   nota?: string;
+}
+
+interface EnlargedImageState {
+  src: string;
+  alt: string;
+  nombre: string;
+  precio?: number;
+  descripcion?: string;
+  dish?: Dish;
+  categoryId?: string;
 }
 
 const money = (value: number) => `S/ ${value.toFixed(2)}`;
@@ -77,6 +88,7 @@ export default function App() {
   const [pickupSelected, setPickupSelected] = useState(false);
   const [customer, setCustomer] = useState({ nombre: '', apellido: '', telefono: '' });
   const [customerError, setCustomerError] = useState('');
+  const [enlargedImage, setEnlargedImage] = useState<EnlargedImageState | null>(null);
 
   const itemCount = useMemo(
     () => cartItems.reduce((sum, item) => sum + item.cantidad, 0),
@@ -109,12 +121,13 @@ export default function App() {
   ), [customer, pickupSelected]);
 
   useEffect(() => {
-    if (!cartOpen && !configuringDish) return;
+    if (!cartOpen && !configuringDish && !enlargedImage) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
-      if (configuringDish) setConfiguringDish(null);
+      if (enlargedImage) setEnlargedImage(null);
+      else if (configuringDish) setConfiguringDish(null);
       else setCartOpen(false);
     };
     window.addEventListener('keydown', closeOnEscape);
@@ -122,7 +135,7 @@ export default function App() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', closeOnEscape);
     };
-  }, [cartOpen, configuringDish]);
+  }, [cartOpen, configuringDish, enlargedImage]);
 
   const changeQuantity = (key: string, delta: number) => {
     setCartItems((current) => current
@@ -396,16 +409,62 @@ export default function App() {
           {!selectedCategory ? (
             <div className="category-grid" aria-label="Categorías de la carta">
               {MENU_DATA.map((category) => (
-                <button className="category-card" key={category.id} type="button" onClick={() => goToCategory(category.id)}>
-                  <span className="category-card-art" aria-hidden="true" />
-                  <span className="category-card-arrow" aria-hidden="true"><ArrowRight size={19} /></span>
-                  <span className="category-card-copy">
-                    <span>
-                      <strong>{category.nombre}</strong>
-                      <small>{category.items.length} {category.items.length === 1 ? 'producto' : 'productos'}</small>
+                <div
+                  className="category-card"
+                  key={category.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => goToCategory(category.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      goToCategory(category.id);
+                    }
+                  }}
+                >
+                  <div className="category-card-media">
+                    {category.imagen ? (
+                      <img
+                        src={category.imagen}
+                        alt={category.nombre}
+                        className="category-card-image"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="category-card-art" aria-hidden="true" />
+                    )}
+                    <div className="category-card-overlay" aria-hidden="true" />
+                    {category.imagen && (
+                      <button
+                        type="button"
+                        className="category-zoom-btn"
+                        aria-label={`Ampliar foto de ${category.nombre}`}
+                        title="Ampliar foto"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEnlargedImage({
+                            src: category.imagen!,
+                            alt: category.nombre,
+                            nombre: category.nombre,
+                            descripcion: category.descripcion,
+                            categoryId: category.id,
+                          });
+                        }}
+                      >
+                        <ZoomIn size={17} />
+                      </button>
+                    )}
+                    <span className="category-card-arrow" aria-hidden="true">
+                      <ArrowRight size={19} />
                     </span>
-                  </span>
-                </button>
+                  </div>
+                  <div className="category-card-copy">
+                    <strong>{category.nombre}</strong>
+                    <small className="category-badge">
+                      {category.items.length} {category.items.length === 1 ? 'producto' : 'productos'}
+                    </small>
+                  </div>
+                </div>
               ))}
             </div>
           ) : (
@@ -429,16 +488,50 @@ export default function App() {
                   {selectedCategory.items.map((dish) => (
                     <article className="product-card" key={dish.id}>
                       <div
-                        className={`product-media ${dish.imagen ? 'has-image' : ''}`}
-                        aria-label={dish.imagen ? dish.nombre : `Espacio reservado para la imagen de ${dish.nombre}`}
+                        className={`product-media ${dish.imagen ? 'has-image is-zoomable' : ''}`}
+                        aria-label={dish.imagen ? `${dish.nombre} (Clic para ampliar imagen)` : `Espacio reservado para la imagen de ${dish.nombre}`}
+                        role={dish.imagen ? 'button' : undefined}
+                        tabIndex={dish.imagen ? 0 : undefined}
+                        onClick={() => {
+                          if (dish.imagen) {
+                            setEnlargedImage({
+                              src: dish.imagen,
+                              alt: dish.nombre,
+                              nombre: dish.nombre,
+                              precio: dish.precio,
+                              descripcion: dish.descripcion,
+                              dish,
+                              categoryId: selectedCategory.id,
+                            });
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (dish.imagen && (e.key === 'Enter' || e.key === ' ')) {
+                            e.preventDefault();
+                            setEnlargedImage({
+                              src: dish.imagen,
+                              alt: dish.nombre,
+                              nombre: dish.nombre,
+                              precio: dish.precio,
+                              descripcion: dish.descripcion,
+                              dish,
+                              categoryId: selectedCategory.id,
+                            });
+                          }
+                        }}
                       >
                         {dish.imagen ? (
-                          <img
-                            src={dish.imagen}
-                            alt={dish.nombre}
-                            className="product-image"
-                            loading="lazy"
-                          />
+                          <>
+                            <img
+                              src={dish.imagen}
+                              alt={dish.nombre}
+                              className="product-image"
+                              loading="lazy"
+                            />
+                            <span className="product-zoom-hint" title="Ampliar imagen">
+                              <ZoomIn size={14} /> Ampliar
+                            </span>
+                          </>
                         ) : (
                           <>
                             <Camera size={25} strokeWidth={1.5} />
@@ -788,6 +881,86 @@ export default function App() {
               </button>
             </div>
           </section>
+        </div>
+      )}
+
+      {enlargedImage && (
+        <div
+          className="lightbox-layer"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Foto ampliada de ${enlargedImage.nombre}`}
+          onClick={() => setEnlargedImage(null)}
+        >
+          <div
+            className="lightbox-dialog"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Botón grande de X roja para cerrarlo */}
+            <button
+              type="button"
+              className="lightbox-close-btn"
+              onClick={() => setEnlargedImage(null)}
+              aria-label="Cerrar imagen ampliada"
+              title="Cerrar (Esc)"
+            >
+              <X size={32} strokeWidth={3.2} />
+            </button>
+
+            <div className="lightbox-image-box">
+              <img
+                src={enlargedImage.src}
+                alt={enlargedImage.alt}
+                className="lightbox-image"
+              />
+            </div>
+
+            <div className="lightbox-info">
+              <div className="lightbox-header">
+                <div className="lightbox-title-wrap">
+                  <h3 className="lightbox-title">{enlargedImage.nombre}</h3>
+                  {enlargedImage.descripcion && (
+                    <p className="lightbox-desc">{enlargedImage.descripcion}</p>
+                  )}
+                </div>
+                {enlargedImage.precio !== undefined && (
+                  <span className="lightbox-price">{money(enlargedImage.precio)}</span>
+                )}
+              </div>
+
+              {enlargedImage.dish && enlargedImage.categoryId && (
+                <div className="lightbox-actions">
+                  <button
+                    type="button"
+                    className="lightbox-order-btn"
+                    onClick={() => {
+                      const { dish, categoryId } = enlargedImage;
+                      setEnlargedImage(null);
+                      openConfigurator(dish, categoryId);
+                    }}
+                  >
+                    <Plus size={18} /> Agregar al pedido
+                  </button>
+                </div>
+              )}
+
+              {!enlargedImage.dish && enlargedImage.categoryId && (
+                <div className="lightbox-actions">
+                  <button
+                    type="button"
+                    className="lightbox-order-btn"
+                    onClick={() => {
+                      const { categoryId } = enlargedImage;
+                      setEnlargedImage(null);
+                      goToCategory(categoryId);
+                    }}
+                  >
+                    <ArrowRight size={18} /> Ver platos de esta categoría
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 

@@ -29,6 +29,7 @@ export interface Category {
   eyebrow: string;
   descripcion: string;
   items: Dish[];
+  imagen?: string;
 }
 
 export interface CategoryUpsell {
@@ -138,6 +139,7 @@ export const MENU_DATA: Category[] = [
     nombre: 'Hamburguesas',
     eyebrow: 'Incluyen tomate, lechuga y papas fritas',
     descripcion: 'Hamburguesas de la casa, desde la original hasta las combinaciones más completas.',
+    imagen: '/dishes/la-peruana.webp',
     items: [
       {
         id: 'hamb-la-parrillera',
@@ -166,6 +168,7 @@ export const MENU_DATA: Category[] = [
     nombre: 'Sándwiches',
     eyebrow: 'Incluyen tomate, lechuga y papas fritas',
     descripcion: 'Filete de pollo y pollo deshilachado en versiones clásicas y especiales.',
+    imagen: '/dishes/la-crunchy.webp',
     items: [
       { id: 'sand-chicken-grill', nombre: 'Chicken Grill', descripcion: 'Doble filete de pollo a la parrilla.', precio: 14 },
       { id: 'sand-chicken-tropical', nombre: 'Chicken Tropical', descripcion: 'Filete de pollo, piña y queso cheddar.', precio: 15 },
@@ -197,6 +200,7 @@ export const MENU_DATA: Category[] = [
     nombre: 'Salchipapas',
     eyebrow: 'Papas crujientes y combinaciones de la casa',
     descripcion: 'Salchicha frankfurter con papas y el complemento que mejor le queda al antojo.',
+    imagen: '/dishes/wings-salchialitas.webp',
     items: [
       { id: 'salchi-tradicional', nombre: 'La Tradicional', descripcion: 'Salchicha frankfurter y papas.', precio: 13 },
       { id: 'salchi-pollo', nombre: 'La Salchipollo', descripcion: 'Salchicha frankfurter, papas y trozos crujientes de pollo.', precio: 16 },
@@ -211,6 +215,7 @@ export const MENU_DATA: Category[] = [
     nombre: 'Pollitos Crunch',
     eyebrow: 'Pollo crocante con acompañamientos',
     descripcion: 'Broster y filetes crocantes servidos con papas, ensalada o chaufa.',
+    imagen: '/dishes/mostrito-pecho.webp',
     items: [
       {
         id: 'broster-ala-pierna',
@@ -260,6 +265,7 @@ export const MENU_DATA: Category[] = [
     nombre: 'Las Wings',
     eyebrow: 'Alitas bañadas en tu salsa favorita',
     descripcion: 'Elige entre BBQ, búfalo, mango fuego, mango princesa, maracuyá, maracuyá hot, chimichurri o acevichada.',
+    imagen: '/dishes/wings-combo.webp',
     items: [
       { id: 'wings-clasicas', nombre: 'Las Clásicas', descripcion: 'Cinco trozos de pollo bañados en salsa y acompañados de papas crujientes.', precio: 15, opciones: [SABORES_ALITAS], imagen: '/dishes/wings-clasicas.webp' },
       { id: 'wings-salchialitas', nombre: 'Salchialitas', descripcion: 'Cinco alitas del sabor que elijas, papas y salchicha frankfurter.', precio: 17, opciones: [SABORES_ALITAS], imagen: '/dishes/wings-salchialitas.webp' },
@@ -273,6 +279,7 @@ export const MENU_DATA: Category[] = [
     nombre: 'Los Criollos de Casa',
     eyebrow: 'Chaufas, plancha y saltados',
     descripcion: 'Agrega huevo y plátano por S/ 3.00.',
+    imagen: '/dishes/lomo-pollo.webp',
     items: [
       { id: 'chaufa-pollo', nombre: 'Chaufa de pollo', precio: 13, imagen: '/dishes/chaufa-pollo.webp' },
       { id: 'chaufa-carne', nombre: 'Chaufa de carne', precio: 15, imagen: '/dishes/chaufa-carne.webp' },
@@ -288,6 +295,7 @@ export const MENU_DATA: Category[] = [
     nombre: 'Conos pa’ llevar',
     eyebrow: 'Prácticos, completos y listos para llevar',
     descripcion: 'Combos en cono con bebida y papas.',
+    imagen: '/dishes/wings-clasicas.webp',
     items: [
       { id: 'cono-monkey', nombre: 'Cono Monkey', descripcion: 'Cinco alitas del sabor que elijas, una bebida de limonada, fresa o piña y una porción de papas.', precio: 20, opciones: [SABORES_ALITAS, BEBIDA_CONO] },
       { id: 'cono-salchicha', nombre: 'Cono Salchicha', descripcion: 'Porción de papas, porción de salchicha y una bebida de limonada, fresa o piña.', precio: 18, opciones: [BEBIDA_CONO] },
@@ -298,6 +306,7 @@ export const MENU_DATA: Category[] = [
     nombre: 'Bebidas',
     eyebrow: 'Frías, calientes y naturales',
     descripcion: 'Jugos, limonadas, frozen, gaseosas y bebidas calientes.',
+    imagen: '/dishes/milkshake-oreo.webp',
     items: [
       { id: 'beb-jugos-clasicos', nombre: 'Jugos clásicos', descripcion: 'Piña, fresa o papaya.', precio: 7, opciones: [{ id: 'sabor', nombre: 'Elige un sabor', tipo: 'single', requerida: true, opciones: [{ id: 'pina', nombre: 'Piña' }, { id: 'fresa', nombre: 'Fresa' }, { id: 'papaya', nombre: 'Papaya' }] }] },
       { id: 'beb-limonadas', nombre: 'Limonadas', descripcion: 'Limón, fresa o piña.', precio: 8, imagen: '/dishes/limonada-fresa.webp', opciones: [{ id: 'sabor', nombre: 'Elige un sabor', tipo: 'single', requerida: true, opciones: [{ id: 'limon', nombre: 'Limón' }, { id: 'fresa', nombre: 'Fresa' }, { id: 'pina', nombre: 'Piña' }] }] },
