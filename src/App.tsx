@@ -331,7 +331,7 @@ export default function App() {
     <div className="site-shell">
       <header className="topbar" id="inicio">
         <a className="brand" href="#inicio" aria-label="Volver al inicio de Monkeyroll">
-          <img src="/monkeyroll-logo-header.png" alt="Monkeyroll" />
+          <img src="/monkeyroll-logo-header.webp" alt="Monkeyroll" />
         </a>
       </header>
 
@@ -376,7 +376,7 @@ export default function App() {
             </div>
           </div>
           <div className="hero-visual">
-            <img src="/monkeyroll-hero.png" alt="Hamburguesa, salchipapas y chaufa al estilo Monkeyroll" />
+            <img src="/monkeyroll-hero.webp" alt="Hamburguesa, salchipapas y chaufa al estilo Monkeyroll" />
           </div>
         </section>
 
@@ -500,7 +500,7 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        <img src="/monkeyroll-logo.png" alt="Monkeyroll" />
+        <img src="/monkeyroll-logo.webp" alt="Monkeyroll" />
         <p>Sabor sin jaula.</p>
         <div className="footer-links">
           <a href={`tel:+${WHATSAPP_NUMBER}`}><Phone size={17} /> 957 669 038</a>
