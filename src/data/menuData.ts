@@ -200,11 +200,11 @@ export const MENU_DATA: Category[] = [
     nombre: 'Salchipapas',
     eyebrow: 'Papas crujientes y combinaciones de la casa',
     descripcion: 'Salchicha frankfurter con papas y el complemento que mejor le queda al antojo.',
-    imagen: '/dishes/wings-salchialitas.webp',
+    imagen: '/dishes/salchi-pobre.webp',
     items: [
       { id: 'salchi-tradicional', nombre: 'La Tradicional', descripcion: 'Salchicha frankfurter y papas.', precio: 13 },
       { id: 'salchi-pollo', nombre: 'La Salchipollo', descripcion: 'Salchicha frankfurter, papas y trozos crujientes de pollo.', precio: 16 },
-      { id: 'salchi-pobre', nombre: 'A lo pobre', descripcion: 'Salchicha frankfurter, papas, doble huevo y plátano.', precio: 16 },
+      { id: 'salchi-pobre', nombre: 'A lo pobre', descripcion: 'Salchicha frankfurter, papas, doble huevo y plátano.', precio: 16, imagen: '/dishes/salchi-pobre.webp' },
       { id: 'salchi-carnivora', nombre: 'La Carnívora', descripcion: 'Salchicha frankfurter, papas, doble tocino y chorizo.', precio: 17 },
       { id: 'salchi-burguer', nombre: 'La Burguer', descripcion: 'Salchicha frankfurter, papas y hamburguesa en trozos.', precio: 20 },
       { id: 'salchi-charapa', nombre: 'La Charapa', descripcion: 'Salchicha frankfurter, papas, chorizo amazónico y plátano.', precio: 20 },
@@ -232,7 +232,7 @@ export const MENU_DATA: Category[] = [
         opciones: [{ id: 'presa', nombre: 'Elige tu presa', tipo: 'single', requerida: true, opciones: [{ id: 'pecho', nombre: 'Pecho' }, { id: 'entrepierna', nombre: 'Entrepierna' }] }],
       },
       { id: 'broster-montada', nombre: 'La Montada Broster', descripcion: 'Dos alitas broster, ensalada y papas.', precio: 16 },
-      { id: 'milanesa-crunch', nombre: 'Milanesa Crunch', descripcion: 'Una pieza crocante de filete de pollo con papas.', precio: 15 },
+      { id: 'milanesa-crunch', nombre: 'Milanesa Crunch', descripcion: 'Una pieza crocante de filete de pollo con papas.', precio: 15, imagen: '/dishes/milanesa-crunch.webp' },
       {
         id: 'mostrito-ala-pierna',
         nombre: 'Mostrito Crunch - ala o pierna',
@@ -308,7 +308,7 @@ export const MENU_DATA: Category[] = [
     descripcion: 'Jugos, limonadas, frozen, gaseosas y bebidas calientes.',
     imagen: '/dishes/milkshake-oreo.webp',
     items: [
-      { id: 'beb-jugos-clasicos', nombre: 'Jugos clásicos', descripcion: 'Piña, fresa o papaya.', precio: 7, opciones: [{ id: 'sabor', nombre: 'Elige un sabor', tipo: 'single', requerida: true, opciones: [{ id: 'pina', nombre: 'Piña' }, { id: 'fresa', nombre: 'Fresa' }, { id: 'papaya', nombre: 'Papaya' }] }] },
+      { id: 'beb-jugos-clasicos', nombre: 'Jugos clásicos', descripcion: 'Piña, fresa o papaya.', precio: 7, imagen: '/dishes/jugos-clasicos.webp', opciones: [{ id: 'sabor', nombre: 'Elige un sabor', tipo: 'single', requerida: true, opciones: [{ id: 'pina', nombre: 'Piña' }, { id: 'fresa', nombre: 'Fresa' }, { id: 'papaya', nombre: 'Papaya' }] }] },
       { id: 'beb-limonadas', nombre: 'Limonadas', descripcion: 'Limón, fresa o piña.', precio: 8, imagen: '/dishes/limonada-fresa.webp', opciones: [{ id: 'sabor', nombre: 'Elige un sabor', tipo: 'single', requerida: true, opciones: [{ id: 'limon', nombre: 'Limón' }, { id: 'fresa', nombre: 'Fresa' }, { id: 'pina', nombre: 'Piña' }] }] },
       { id: 'beb-frozen', nombre: 'Frozen', descripcion: 'Limón, fresa o maracuyá.', precio: 10, opciones: [{ id: 'sabor', nombre: 'Elige un sabor', tipo: 'single', requerida: true, opciones: [{ id: 'limon', nombre: 'Limón' }, { id: 'fresa', nombre: 'Fresa' }, { id: 'maracuya', nombre: 'Maracuyá' }] }] },
       { id: 'beb-especiales', nombre: 'Especiales', descripcion: 'Maracumango o hierba luisa.', precio: 11, opciones: [{ id: 'sabor', nombre: 'Elige un sabor', tipo: 'single', requerida: true, opciones: [{ id: 'maracumango', nombre: 'Maracumango' }, { id: 'hierba-luisa', nombre: 'Hierba luisa' }] }] },
