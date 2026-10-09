@@ -272,7 +272,7 @@ export const MENU_DATA: Category[] = [
     items: [
       { id: 'sand-chicken-grill', nombre: 'Chicken Grill', descripcion: 'Doble filete de pollo a la parrilla.', precio: 14, imagen: '/dishes/chicken-grill.png' },
       { id: 'sand-chicken-tropical', nombre: 'Chicken Tropical', descripcion: 'Filete de pollo, piña y queso cheddar.', precio: 15, imagen: '/dishes/chicken-tropical.png' },
-      { id: 'sand-deshilachado-clasico', nombre: 'Deshilachado clásico', descripcion: '100 g de pollo deshilachado.', precio: 10 },
+      { id: 'sand-deshilachado-clasico', nombre: 'Deshilachado clásico', descripcion: '100 g de pollo deshilachado.', precio: 10, imagen: '/dishes/deshilachado-clasico.png' },
       {
         id: 'sand-deshilachado-especial',
         nombre: 'Deshilachado especial',
