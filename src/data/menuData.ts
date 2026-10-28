@@ -255,7 +255,7 @@ export const MENU_DATA: Category[] = [
           opciones: [{ id: 'queso', nombre: 'Queso' }, { id: 'huevo', nombre: 'Huevo' }],
         }],
       },
-      { id: 'hamb-la-power', nombre: 'La Power', descripcion: 'Doble carne tradicional, doble queso cheddar y doble tocino.', precio: 22, imagen: '/dishes/la-power.webp' },
+      { id: 'hamb-la-power', nombre: 'La Power', descripcion: 'Doble carne tradicional, doble queso cheddar y doble tocino.', precio: 22, imagen: '/dishes/la-power-nueva.png' },
       { id: 'hamb-la-crunchy', nombre: 'La Crunchy - Crispy', descripcion: 'Pollo crispy, queso cheddar y salsa BBQ.', precio: 15, imagen: '/dishes/la-crunchy.webp' },
       { id: 'hamb-la-original', nombre: 'La Original', descripcion: 'Carne tradicional.', precio: 12, imagen: '/dishes/la-original.webp' },
       { id: 'hamb-la-tropical', nombre: 'La Tropical - Hawaiana', descripcion: 'Carne tradicional, queso y piña.', precio: 14, imagen: '/dishes/la-tropical.webp' },
@@ -268,16 +268,17 @@ export const MENU_DATA: Category[] = [
     nombre: 'Sándwiches',
     eyebrow: 'Incluyen tomate, lechuga y papas fritas',
     descripcion: 'Filete de pollo y pollo deshilachado en versiones clásicas y especiales.',
-    imagen: '/dishes/la-crunchy.webp',
+    imagen: '/dishes/deshilachado-especial-nuevo.png',
     items: [
       { id: 'sand-chicken-grill', nombre: 'Chicken Grill', descripcion: 'Doble filete de pollo a la parrilla.', precio: 14, imagen: '/dishes/chicken-grill.png' },
       { id: 'sand-chicken-tropical', nombre: 'Chicken Tropical', descripcion: 'Filete de pollo, piña y queso cheddar.', precio: 15, imagen: '/dishes/chicken-tropical.png' },
-      { id: 'sand-deshilachado-clasico', nombre: 'Deshilachado clásico', descripcion: '100 g de pollo deshilachado.', precio: 10, imagen: '/dishes/deshilachado-clasico.png' },
+      { id: 'sand-deshilachado-clasico', nombre: 'Deshilachado clásico', descripcion: '100 g de pollo deshilachado.', precio: 10, imagen: '/dishes/deshilachado-clasico-nuevo.png' },
       {
         id: 'sand-deshilachado-especial',
         nombre: 'Deshilachado especial',
         descripcion: '100 g de pollo deshilachado y dos acompañamientos: plátano, huevo, tocino, queso cheddar o jamón.',
         precio: 13,
+        imagen: '/dishes/deshilachado-especial-nuevo.png',
         opciones: [{
           id: 'acompanamientos',
           nombre: 'Elige 2 acompañamientos',
@@ -303,7 +304,7 @@ export const MENU_DATA: Category[] = [
     imagen: '/dishes/salchi-pobre.webp',
     items: [
       { id: 'salchi-tradicional', nombre: 'La Tradicional', descripcion: 'Salchicha frankfurter y papas.', precio: 13 },
-      { id: 'salchi-pollo', nombre: 'La Salchipollo', descripcion: 'Salchicha frankfurter, papas y trozos crujientes de pollo.', precio: 16 },
+      { id: 'salchi-pollo', nombre: 'La Salchipollo', descripcion: 'Salchicha frankfurter, papas y trozos crujientes de pollo.', precio: 16, imagen: '/dishes/salchipollo-nueva.png' },
       { id: 'salchi-pobre', nombre: 'A lo pobre', descripcion: 'Salchicha frankfurter, papas, doble huevo y plátano.', precio: 16, imagen: '/dishes/salchi-pobre.webp' },
       { id: 'salchi-carnivora', nombre: 'La Carnívora', descripcion: 'Salchicha frankfurter, papas, doble tocino y chorizo.', precio: 17 },
       { id: 'salchi-burguer', nombre: 'La Burguer', descripcion: 'Salchicha frankfurter, papas y hamburguesa en trozos.', precio: 20 },
@@ -411,7 +412,7 @@ export const MENU_DATA: Category[] = [
       { id: 'beb-gaseosa-1l', nombre: 'Gaseosa 1 L', descripcion: 'Inca Kola o Coca-Cola.', precio: 8, imagen: '/dishes/gaseosa-1l.webp', opciones: [{ id: 'gaseosa', nombre: 'Elige tu gaseosa', tipo: 'single', requerida: true, opciones: [{ id: 'inka-kola', nombre: 'Inka Kola' }, { id: 'coca-cola', nombre: 'Coca-Cola' }] }] },
       { id: 'beb-infusiones', nombre: 'Infusiones calientes', descripcion: 'Anís, manzanilla o hierba luisa.', precio: 3.5, imagen: '/dishes/infusiones-calientes.webp', opciones: [{ id: 'sabor', nombre: 'Elige una infusión', tipo: 'single', requerida: true, opciones: [{ id: 'anis', nombre: 'Anís' }, { id: 'manzanilla', nombre: 'Manzanilla' }, { id: 'hierba-luisa', nombre: 'Hierba luisa' }] }] },
       { id: 'beb-cafe', nombre: 'Café', precio: 5, imagen: '/dishes/cafe.webp' },
-      { id: 'beb-agua', nombre: 'Agua 500 ml', precio: 3, imagen: '/dishes/agua-500.webp' },
+      { id: 'beb-agua', nombre: 'Agua 500 ml', descripcion: 'Botella de 500 ml.', precio: 3, imagen: '/dishes/agua-500.webp' },
     ],
   },
 ];

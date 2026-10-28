@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { CATEGORY_UPSELLS, MENU_DATA, type Dish, type DishOption } from './data/menuData';
 
-const WHATSAPP_NUMBER = '51957669038';
+const WHATSAPP_NUMBER = '51906150712';
 const INSTAGRAM_URL = 'https://www.instagram.com/monkeyrollperu/';
 const MAPS_URL = 'https://www.google.com/maps/place/Monkeyroll/@-11.985699,-76.841749,1851m/data=!3m1!1e3!4m6!3m5!1s0x9105c33838b74247:0x8d4424dd7d3e1518!8m2!3d-11.9871569!4d-76.8354301!16s%2Fg%2F11p5ml7x56!5m1!1e1?entry=ttu&g_ep=EgoyMDI2MDkyNy4xIKXMDSoASAFQAw%3D%3D';
 const MAP_EMBED_URL = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d21809.05114670971!2d-76.81351747747055!3d-11.972918849295421!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c33838b74247%3A0x8d4424dd7d3e1518!2sMonkeyroll!5e1!3m2!1ses!2spe!4v1790729257953!5m2!1ses!2spe';
@@ -596,7 +596,7 @@ export default function App() {
         <img src="/monkeyroll-logo.webp" alt="Monkeyroll" />
         <p>Sabor sin jaula.</p>
         <div className="footer-links">
-          <a href={`tel:+${WHATSAPP_NUMBER}`}><Phone size={17} /> 957 669 038</a>
+          <a href={`tel:+${WHATSAPP_NUMBER}`}><Phone size={17} /> 906 150 712</a>
           <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer"><Instagram size={17} /> @monkeyrollperu</a>
           <a href={MAPS_URL} target="_blank" rel="noreferrer"><MapPin size={17} /> Cómo llegar</a>
         </div>
