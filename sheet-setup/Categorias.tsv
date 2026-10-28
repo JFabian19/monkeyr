@@ -1,0 +1,9 @@
+id	nombre	subtitulo	descripcion	imagen	orden	activo
+hamburguesas	Hamburguesas	Incluyen tomate, lechuga y papas fritas	Hamburguesas de la casa, desde la original hasta las combinaciones más completas.	/dishes/la-peruana.webp	1	SI
+sandwiches	Sándwiches	Incluyen tomate, lechuga y papas fritas	Filete de pollo y pollo deshilachado en versiones clásicas y especiales.	/dishes/deshilachado-especial-nuevo.png	2	SI
+salchipapas	Salchipapas	Papas crujientes y combinaciones de la casa	Salchicha frankfurter con papas y el complemento que mejor le queda al antojo.	/dishes/salchi-pobre.webp	3	SI
+pollitos-crunch	Pollitos Crunch	Pollo crocante con acompañamientos	Broster y filetes crocantes servidos con papas, ensalada o chaufa.	/dishes/mostrito-pecho.webp	4	SI
+wings	Las Wings	Alitas bañadas en tu salsa favorita	Elige entre BBQ, búfalo, mango fuego, mango princesa, maracuyá, maracuyá hot, chimichurri o acevichada.	/dishes/wings-combo.webp	5	SI
+criollos	Los Criollos de Casa	Chaufas, plancha y saltados	Agrega huevo y plátano por S/ 3.00.	/dishes/lomo-pollo.webp	6	SI
+conos	Conos pa’ llevar	Prácticos, completos y listos para llevar	Combos en cono con bebida y papas.	/dishes/cono-monkey.png	7	SI
+bebidas	Bebidas	Frías, calientes y naturales	Jugos, limonadas, frozen, gaseosas y bebidas calientes.	/dishes/milkshake-oreo.webp	8	SI

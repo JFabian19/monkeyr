@@ -1,67 +1,100 @@
-import Papa from 'papaparse';
+import { MENU_DATA, type Category, type Dish } from '../data/menuData';
 
-// Coloca aquí tu ID de Google Sheets (lo encuentras en la URL de tu hoja de cálculo)
-export const SHEET_ID = '';
+export const SHEET_ID = '1bUU2g3-Rdyhhuwfa1oHJrqRDVKf2lWXJyc4be8G1tbo';
 
-export interface SheetDish {
-  categoría: string;
-  'nombre del plato': string;
-  descripción: string;
-  precio: string;
-  'URL de imagen': string;
-}
+type Cell = { v?: string | number | boolean | null } | null;
+type VisualizationResponse = {
+  status: string;
+  table?: { cols: { label: string }[]; rows: { c: Cell[] }[] };
+  errors?: { detailed_message?: string; message?: string }[];
+};
+type SheetTable = { headers: string[]; rows: Record<string, string>[] };
 
-export interface SheetCategory {
-  nombre: string;
-}
+let requestCount = 0;
 
-export const fetchSheetData = async <T>(sheetName: string): Promise<T[]> => {
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
-  
-  try {
-    const response = await fetch(url);
-    const csvText = await response.text();
-    
-    return new Promise((resolve, reject) => {
-      Papa.parse(csvText, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results) => resolve(results.data as T[]),
-        error: (error: any) => reject(error),
-      });
-    });
-  } catch (error) {
-    console.error(`Error fetching sheet ${sheetName}:`, error);
-    return [];
-  }
+const readSheet = (sheetName: string): Promise<SheetTable> => new Promise((resolve, reject) => {
+  const callbackName = `__monkeyroll_sheet_${++requestCount}`;
+  const script = document.createElement('script');
+  const timeout = window.setTimeout(() => finish(new Error(`No se pudo leer ${sheetName}`)), 12000);
+
+  const finish = (error?: Error, table?: SheetTable) => {
+    window.clearTimeout(timeout);
+    delete (window as unknown as Record<string, unknown>)[callbackName];
+    script.remove();
+    if (error) reject(error);
+    else resolve(table ?? { headers: [], rows: [] });
+  };
+
+  (window as unknown as Record<string, unknown>)[callbackName] = (response: VisualizationResponse) => {
+    if (response.status !== 'ok' || !response.table) {
+      finish(new Error(response.errors?.[0]?.detailed_message ?? response.errors?.[0]?.message ?? `Error en ${sheetName}`));
+      return;
+    }
+    const headers = response.table.cols.map((col) => col.label.trim().toLowerCase());
+    const rows = response.table.rows.map((row) => Object.fromEntries(headers.map((header, index) => {
+      const cell = row.c[index];
+      return [header, cell?.v == null ? '' : String(cell.v).trim()];
+    })));
+    finish(undefined, { headers, rows });
+  };
+
+  script.onerror = () => finish(new Error(`No se pudo cargar ${sheetName}`));
+  const tqx = `out:json;responseHandler:${callbackName}`;
+  script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&headers=1&tqx=${encodeURIComponent(tqx)}&_=${Date.now()}`;
+  document.head.appendChild(script);
+});
+
+const enabled = (value: string) => !['no', 'false', '0'].includes(value.trim().toLowerCase());
+const order = (value: string, fallback: number) => {
+  const number = Number(value);
+  return value !== '' && Number.isFinite(number) ? number : fallback;
+};
+const imageUrl = (value: string) => {
+  const url = value.trim();
+  if (url.startsWith('/') && !url.startsWith('//')) return url;
+  if (/^https:\/\//i.test(url)) return url;
+  return undefined;
 };
 
-// Configura aquí la URL de tu Google Apps Script Web App para poder enviar datos
-// Instrucciones: Crea un Apps Script, pega el código que te di, impleméntalo como Aplicación Web y pega la URL de ejecución aquí.
-export const WEB_APP_URL = '';
-
-export const submitSheetData = async (sheetName: string, data: any): Promise<boolean> => {
-  if (!WEB_APP_URL) {
-    console.warn('Falta configurar WEB_APP_URL. Simulando envío a:', sheetName, data);
-    return new Promise(resolve => setTimeout(() => resolve(true), 1000));
+export const loadMenuFromSheet = async (): Promise<Category[]> => {
+  const [categories, dishes] = await Promise.all([readSheet('Categorias'), readSheet('Productos')]);
+  if (!['id', 'nombre', 'descripcion', 'imagen', 'orden', 'activo'].every((column) => categories.headers.includes(column))) {
+    throw new Error('La pestaña Categorias no tiene las columnas esperadas.');
+  }
+  if (!['id', 'categoria_id', 'nombre', 'descripcion', 'precio', 'imagen', 'orden', 'activo'].every((column) => dishes.headers.includes(column))) {
+    throw new Error('La pestaña Productos no tiene las columnas esperadas.');
   }
 
-  try {
-    const response = await fetch(WEB_APP_URL, {
-      method: 'POST',
-      mode: 'no-cors', // Importante para evitar problemas de CORS con Apps Script
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        sheetName,
-        data,
-      }),
-    });
-    
-    return true;
-  } catch (error) {
-    console.error(`Error submitting to sheet ${sheetName}:`, error);
-    return false;
-  }
+  const existingDishes = new Map(MENU_DATA.flatMap((category) => category.items).map((dish) => [dish.id, dish]));
+  const products = dishes.rows
+    .map((row, index) => ({ row, index }))
+    .filter(({ row }) => row.id && row.categoria_id && row.nombre && enabled(row.activo))
+    .sort((a, b) => order(a.row.orden, a.index) - order(b.row.orden, b.index))
+    .map(({ row }) => {
+      const price = Number(row.precio.replace(',', '.'));
+      if (!Number.isFinite(price) || price < 0) return null;
+      const dish: Dish = {
+        id: row.id,
+        nombre: row.nombre,
+        descripcion: row.descripcion || undefined,
+        precio: price,
+        imagen: imageUrl(row.imagen),
+        opciones: existingDishes.get(row.id)?.opciones,
+      };
+      return { categoryId: row.categoria_id, dish };
+    })
+    .filter((entry): entry is { categoryId: string; dish: Dish } => entry !== null);
+
+  return categories.rows
+    .map((row, index) => ({ row, index }))
+    .filter(({ row }) => row.id && row.nombre && enabled(row.activo))
+    .sort((a, b) => order(a.row.orden, a.index) - order(b.row.orden, b.index))
+    .map(({ row }) => ({
+      id: row.id,
+      nombre: row.nombre,
+      eyebrow: row.subtitulo ?? '',
+      descripcion: row.descripcion,
+      imagen: imageUrl(row.imagen),
+      items: products.filter((item) => item.categoryId === row.id).map((item) => item.dish),
+    }));
 };

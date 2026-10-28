@@ -15,7 +15,8 @@ import {
   X,
   ZoomIn,
 } from 'lucide-react';
-import { CATEGORY_UPSELLS, MENU_DATA, type Dish, type DishOption } from './data/menuData';
+import { CATEGORY_UPSELLS, MENU_DATA, type Category, type Dish, type DishOption } from './data/menuData';
+import { loadMenuFromSheet } from './services/googleSheets';
 
 const WHATSAPP_NUMBER = '51906150712';
 const INSTAGRAM_URL = 'https://www.instagram.com/monkeyrollperu/';
@@ -75,6 +76,7 @@ const optionExtraPrice = (options: DishOption[] | undefined, selected: Record<st
 );
 
 export default function App() {
+  const [menuData, setMenuData] = useState<Category[]>(MENU_DATA);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
@@ -101,9 +103,19 @@ export default function App() {
   );
 
   const selectedCategory = useMemo(
-    () => MENU_DATA.find((category) => category.id === selectedCategoryId) ?? null,
-    [selectedCategoryId],
+    () => menuData.find((category) => category.id === selectedCategoryId) ?? null,
+    [menuData, selectedCategoryId],
   );
+
+  useEffect(() => {
+    let active = true;
+    loadMenuFromSheet()
+      .then((categories) => {
+        if (active) setMenuData(categories);
+      })
+      .catch((error) => console.warn('Usando la carta local:', error));
+    return () => { active = false; };
+  }, []);
 
   const configuratorUpsells = useMemo(() => {
     if (!configuringDish || !configuringCategoryId) return [];
@@ -408,7 +420,7 @@ export default function App() {
 
           {!selectedCategory ? (
             <div className="category-grid" aria-label="Categorías de la carta">
-              {MENU_DATA.map((category) => (
+              {menuData.map((category) => (
                 <div
                   className="category-card"
                   key={category.id}
@@ -475,7 +487,7 @@ export default function App() {
               <section className="menu-category" id={selectedCategory.id} aria-labelledby={`${selectedCategory.id}-title`}>
                 <div className="category-heading">
                   <span className="category-number">
-                    {String(MENU_DATA.findIndex((category) => category.id === selectedCategory.id) + 1).padStart(2, '0')}
+                    {String(menuData.findIndex((category) => category.id === selectedCategory.id) + 1).padStart(2, '0')}
                   </span>
                   <div>
                     <p>{selectedCategory.eyebrow}</p>

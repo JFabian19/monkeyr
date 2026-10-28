@@ -1,0 +1,49 @@
+id	categoria_id	nombre	descripcion	precio	imagen	orden	activo
+hamb-chess-bacon	hamburguesas	La Chess and Bacon	Carne artesanal, queso cheddar y doble tocino.	15	/dishes/chess-and-bacon.png	1	SI
+hamb-la-parrillera	hamburguesas	La Parrillera	Carne tradicional, queso o huevo, chorizo y salsa chimichurri.	15	/dishes/la-parrillera.webp	2	SI
+hamb-la-power	hamburguesas	La Power	Doble carne tradicional, doble queso cheddar y doble tocino.	22	/dishes/la-power-nueva.png	3	SI
+hamb-la-crunchy	hamburguesas	La Crunchy - Crispy	Pollo crispy, queso cheddar y salsa BBQ.	15	/dishes/la-crunchy.webp	4	SI
+hamb-la-original	hamburguesas	La Original	Carne tradicional.	12	/dishes/la-original.webp	5	SI
+hamb-la-tropical	hamburguesas	La Tropical - Hawaiana	Carne tradicional, queso y piña.	14	/dishes/la-tropical.webp	6	SI
+hamb-la-peruana	hamburguesas	La Peruana - A lo pobre	Carne tradicional, huevo y plátano.	14	/dishes/la-peruana.webp	7	SI
+hamb-la-suprema	hamburguesas	La Suprema - Royal	Carne tradicional, huevo, queso y jamón.	15	/dishes/la-suprema-royal.webp	8	SI
+sand-chicken-grill	sandwiches	Chicken Grill	Doble filete de pollo a la parrilla.	14	/dishes/chicken-grill.png	1	SI
+sand-chicken-tropical	sandwiches	Chicken Tropical	Filete de pollo, piña y queso cheddar.	15	/dishes/chicken-tropical.png	2	SI
+sand-deshilachado-clasico	sandwiches	Deshilachado clásico	100 g de pollo deshilachado.	10	/dishes/deshilachado-clasico-nuevo.png	3	SI
+sand-deshilachado-especial	sandwiches	Deshilachado especial	100 g de pollo deshilachado y dos acompañamientos: plátano, huevo, tocino, queso cheddar o jamón.	13	/dishes/deshilachado-especial-nuevo.png	4	SI
+salchi-tradicional	salchipapas	La Tradicional	Salchicha frankfurter y papas.	13	/dishes/salchi-tradicional.png	1	SI
+salchi-pollo	salchipapas	La Salchipollo	Salchicha frankfurter, papas y trozos crujientes de pollo.	16	/dishes/salchipollo-nueva.png	2	SI
+salchi-pobre	salchipapas	A lo pobre	Salchicha frankfurter, papas, doble huevo y plátano.	16	/dishes/salchi-pobre.webp	3	SI
+salchi-carnivora	salchipapas	La Carnívora	Salchicha frankfurter, papas, doble tocino y chorizo.	17	/dishes/salchi-carnivora.png	4	SI
+salchi-burguer	salchipapas	La Burguer	Salchicha frankfurter, papas y hamburguesa en trozos.	20	/dishes/salchi-burguer.png	5	SI
+salchi-charapa	salchipapas	La Charapa	Salchicha frankfurter, papas, chorizo amazónico y plátano.	20	/dishes/salchi-charapa.png	6	SI
+broster-ala-pierna	pollitos-crunch	Broster clásico - ala o pierna	Presa broster, ensalada y papas.	10	/dishes/broster-ala-pierna.png	1	SI
+broster-pecho-entrepierna	pollitos-crunch	Broster clásico - pecho o entrepierna	Presa broster, ensalada y papas.	13	/dishes/broster-pecho-entrepierna.png	2	SI
+broster-montada	pollitos-crunch	La Montada Broster	Dos alitas broster, ensalada y papas.	16	/dishes/broster-montada.png	3	SI
+milanesa-crunch	pollitos-crunch	Milanesa Crunch	Una pieza crocante de filete de pollo con papas.	15	/dishes/milanesa-crunch.webp	4	SI
+mostrito-ala-pierna	pollitos-crunch	Mostrito Crunch - ala o pierna	Presa broster, chaufa y papas.	16	/dishes/mostrito-ala-pierna.png	5	SI
+mostrito-pecho-entrepierna	pollitos-crunch	Mostrito Crunch - pecho o entrepierna	Presa broster, chaufa y papas.	19	/dishes/mostrito-pecho.webp	6	SI
+wings-clasicas	wings	Las Clásicas	5 piezas de alitas bañadas en salsa y acompañadas de papas crujientes.	15	/dishes/wings-clasicas.webp	1	SI
+wings-salchialitas	wings	Salchialitas	Cinco alitas del sabor que elijas, papas y salchicha frankfurter.	17	/dishes/wings-salchialitas.webp	2	SI
+wings-mostrialitas	wings	Mostrialitas	Cinco alitas del sabor que elijas, papas y una porción de chaufa.	20	/dishes/wings-mostrialitas.webp	3	SI
+wings-combo	wings	Combo Wings	Diez trozos de alitas bañadas en salsa y acompañados de papas crujientes.	26	/dishes/wings-combo.webp	4	SI
+wings-combo-triple	wings	Combo Wings Triple	Quince trozos de alitas bañadas en salsa y acompañadas de papas crujientes.	40	/dishes/wings-combo-triple.webp	5	SI
+chaufa-pollo	criollos	Chaufa de pollo	Porción de arroz chaufa con 200 gramos de trozos de pollo.	13	/dishes/chaufa-pollo.webp	1	SI
+chaufa-carne	criollos	Chaufa de carne	Porción de arroz chaufa con 200 gramos de carne.	15	/dishes/chaufa-carne.webp	2	SI
+chaufa-charapa	criollos	Chaufa charapa	Porción de arroz chaufa con 200 gramos de cecina, 200 gramos de chorizo amazónico y plátano.	17	/dishes/chaufa-charapa.webp	3	SI
+chaufa-broster	criollos	Chaufa broster	Contundente porción de chaufa con una presa broster. Elige pecho o entrepierna.	22	/dishes/chaufa-broster.webp	4	SI
+pollo-plancha	criollos	Pollo a la plancha		13	/dishes/pollo-plancha.webp	5	SI
+lomo-pollo	criollos	Lomo saltado de pollo	Porción de arroz, papas fritas y 250 gramos de pollo.	16	/dishes/lomo-pollo.webp	6	SI
+lomo-carne	criollos	Lomo saltado de carne	Porción de arroz, papas fritas y 250 gramos de carne.	18	/dishes/lomo-carne.webp	7	SI
+cono-monkey	conos	Cono Monkey	Cinco alitas del sabor que elijas, una bebida de limonada, fresa o piña y una porción de papas.	20	/dishes/cono-monkey.png	1	SI
+cono-salchicha	conos	Cono Salchicha	Porción de papas, porción de salchicha y una bebida de limonada, fresa o piña.	18	/dishes/cono-salchicha.png	2	SI
+beb-jugos-clasicos	bebidas	Jugos clásicos	Piña, fresa o papaya.	7	/dishes/jugos-clasicos.webp	1	SI
+beb-limonadas	bebidas	Limonadas	Limón, fresa o piña.	8	/dishes/limonada-fresa.webp	2	SI
+beb-frozen	bebidas	Frozen	Limón, fresa o maracuyá.	10	/dishes/beb-frozen.png	3	SI
+beb-especiales	bebidas	Especiales	Maracumango o hierba luisa.	11	/dishes/beb-especiales.png	4	SI
+beb-milkshake	bebidas	Milkshake	Oreo, vainilla, chocolate o fresa.	11	/dishes/milkshake-oreo.webp	5	SI
+beb-gaseosa-600	bebidas	Gaseosa 600 ml	Inca Kola o Coca-Cola.	4	/dishes/gaseosa-600.webp	6	SI
+beb-gaseosa-1l	bebidas	Gaseosa 1 L	Inca Kola o Coca-Cola.	8	/dishes/gaseosa-1l.webp	7	SI
+beb-infusiones	bebidas	Infusiones calientes	Anís, manzanilla o hierba luisa.	3.5	/dishes/infusiones-calientes.webp	8	SI
+beb-cafe	bebidas	Café		5	/dishes/cafe.webp	9	SI
+beb-agua	bebidas	Agua 500 ml	Botella de 500 ml.	3	/dishes/agua-500.webp	10	SI
